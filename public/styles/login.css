@@ -3,6 +3,9 @@
     --button-color: #1E3A8A;
     font-size: 24px;
 }
+*{
+    box-sizing: border-box;
+}
 
 body{
     background-color: #E6F0FF;
@@ -14,15 +17,16 @@ body{
     
 }
 .site-header {
-    
+    position: fixed;
+    width: 100%;
     font-family: 'Krona One', sans-serif;
     background-color: #FFFFFF;  
     top: 0;
     z-index: 10;
     height: var(--header-height);
-    font-family: 'Krona One'; 
+
 }
-.header-cointainer{
+.header-container{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -68,7 +72,7 @@ body{
     font-size: 0.9rem;
     display: flex;
     list-style: none;
-    gap:150px;
+    gap:7vw;
     
 }
 .menu-item:hover{
@@ -104,6 +108,7 @@ body{
 }
 
 main{
+    padding-top: var(--header-height);
     font-family: 'JejuGothic',sans-serif;
     display: flex;
     height: calc(100vh - var(--header-height));
@@ -123,6 +128,7 @@ main{
     font-family: 'Krona One', sans-serif;
     font-size: 2rem;
     display: flex;
+
     justify-content: center;
     letter-spacing: 5%;
     margin: 0;
@@ -130,6 +136,7 @@ main{
 .form-parent{
     margin: 15vh;
     display:flex;
+    flex-direction: column;
     width:40vw;
     height: 50vh;
     gap: 1em;
@@ -142,11 +149,15 @@ main{
     width: 100%;
     
 }
+a:visited,
+a:link{
+    color: #000000;
+}
 #mobile-icon-div{
     display: none;
 }
-#login-form > p,
-#login-form > a{
+#login-form  p,
+#login-form  a{
     margin: 0;
     padding-left: 0.5em;;
 }
