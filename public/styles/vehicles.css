@@ -126,21 +126,47 @@ body{
     font-family: 'JejuGothic', sans-serif;
     letter-spacing: 2px;
 }
-
 main{
     height: 100vh;
     font-family: 'JejuGothic',sans-serif;
     cursor: default;
     display: grid;
     grid-template-columns: repeat(2, 1fr); 
-    grid-template-rows: 3fr 2fr 5fr; 
+    grid-template-rows: 7fr 23fr 50fr;
     box-sizing: border-box;
     gap: 1em;
     padding: calc(var(--header-height) + 1em) 1.5em 1.5em 1.5em;
-    min-height: 100vh;
 
 }
+#buttons{
+    display: flex;
+    gap: 1em;
 
+}
+button{
+    border-radius: 20px;
+    border: 0;
+    background-color: var(--button-color);
+    color: #FFFFFF;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px, rgba(17, 17, 26, 0.1) 0px 24px 80px;
+    font-size: 1.2em;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.3em;
+    font-family: 'JejuGothic',sans-serif;
+    height: 2.3em;
+    letter-spacing: 0.05em;
+}
+.icon-add-remove{
+    width: 40px;
+    height: 40px;
+}
+button:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+}
 .grid-container{
     display: flex;
     border-radius: 20px;
@@ -150,50 +176,50 @@ main{
     height:100%;
     justify-self: center;
     align-self: center;
-
-    overflow-y: auto; 
-    padding-bottom: 1em;
-    min-height: max-content;
-
-
-
-}
-.grid-container h1{
-    font-size: 1.3em;
-    max-width: max-content;
-    max-height: max-content;
-    margin: 0;
-    padding-top: 0.4em;
-    font-weight: 300;
-    font-family: 'JejuGothic',sans-serif;
-}
-#summary{
-    grid-row-end: span 2;
-    flex-direction: column;
+    padding: 1em;
     align-items: center;
+    flex-direction: column;
     gap: 0.5em;
-    padding-bottom: 0.5em;
-
-    
 }
-p{
-    font-size: clamp(0.9rem, 1vw + 0.5rem, 1.2rem);
-    margin: 0;
+#vehicle-summary{
+    grid-column-start: 1;
+    justify-content: center;
+}
+#vehicle-list{
+    grid-column-start: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width:max-content;
+    padding: 1em;
+}
+#vehicle-list::-webkit-scrollbar {
+    width: 0px; 
+  }
+
+#vehicle-information{
+    grid-column-start: 2;
+    grid-row-start:1;
+    grid-row-end: span 3;
+    padding: 1em 0 1em 0;
 }
 .inside-grid-container{
     padding: 0.2em 1em 0.2em 1em;
     border-radius: 20px;
     border: 2px solid #1E3A8A;
-    width: 90%;
+    width: 100%;
     font-size: clamp(0.7rem, 1vw + 0.5rem, 1rem);
     min-height: max-content;
 
 }
-#summary>.inside-grid-container{
-    height: 40%;
-
+#inside-grid-container-vehicle-summary{
+    height: 85%;
+    align-self: center;
+    height: max-content;
 }
-
+p{
+    font-size: clamp(0.9rem, 1vw + 0.5rem, 1.2rem);
+    margin: 0;
+}
 .data-box{
     display: flex;
     justify-content: space-between;
@@ -201,9 +227,7 @@ p{
     font-size: 0.9em;
 }
 .vehicles-data-labels, 
-.vehicles-data-values,
-.drivers-data-labels,
-.drivers-data-values{
+.vehicles-data-values{
     display: flex;
     flex-direction: column;
     gap: 0.1em;
@@ -226,85 +250,128 @@ p{
 .on-the-road{
     background-color: #FB0202;
 }
-.in-service,
-.on-leave{
+.in-service{
     background-color: #000000;
 }
-#statistics{
-    
-    flex-direction: column;
-    align-items: center;
-    gap:0.5em;
+h1{
+    font-size: 1.3em;
+    max-width: max-content;
+    max-height: max-content;
+    margin: 0;
+    font-weight: 300;
 
 }
-#statistics button{
-    border-radius: 20px;
-    width: 50%;
-    height: 18%;;
-    font-size: 1.2em;
-    color:#FFFFFF;
-    background: var(--button-color);
-    border: 0;
-    box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px, rgba(17, 17, 26, 0.1) 0px 24px 80px;
-}
-#statistics button:hover{
-    transform: scale(1.1);
-    cursor: pointer;
-}
-#notifications{
-    gap: 0.5em;
-    flex-direction: column;
-    align-items: center;
 
-}
-#notifications> .inside-grid-container{
-    display: flex;
-    gap: 1em;
-    align-items: center;
-}
-.seen,
-.unseen{
-    width: 30px;
-}
-#map{
-    grid-column-start: 2;
-    grid-row-start: 2;
-    grid-row-end: span 2;
-    flex-direction: column;
+#vehicles-table {
     width: 100%;
-    padding-left: 1.5em;
+    border-collapse: collapse;
+    font-size: 0.85em;
+    
+  }
+  
+  #vehicles-table th, #vehicles-table td {
+    text-align: center;
+    padding: 0.5em;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+  }
+  #vehicles-table tbody{
+    font-size: 0.8em;
+  }
+  
+  .status-dot-table {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .status-green { background-color: #02B102; }
+  .status-red { background-color: #FB0202; }
+  .status-black { background-color: #000000; }
+
+
+  #inside-grid-container-vehicle-list{
+    min-width: max-content;
+
+    
+
 }
-#map h1{
-    align-self: center;
+#vehicle-information{
+    padding: 1em;
+    min-height: max-content;
+}
+#inside-grid-container-vehicle-information{
+    height: 95%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1em;
+
+    min-width: max-content;
+    justify-content: space-between;
+}
+#vehicle-information-data-labels-values-image{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.vehicle-information-data-labels-values{
+    display: flex;
+    flex-direction:column;
+    font-size: 0.8em;
+    height: max-content;
+    gap: 0.2em;
+    white-space: nowrap;
+
+}
+#vehicle-information-data-values{
+    align-items: center;
+}
+#car-picture{
+    width: 221px;
+    height: auto;
+}
+#vehicle-image{
+    height: max-content;
     width: max-content;
-}
-
-.map-cars{
-    display:flex;
-    padding-top:1em;
-    gap: 2em;
-
+    padding: 0;
 }
 .map-container{
     padding: 0;
     border-radius: 20px;
     border: 2px solid #1E3A8A;
-    height: 45vh;
-    width: 30vw;
+    height: 30vh;
+    width: 70%;
     overflow: hidden;
-    
+}
+#information-buttons{
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    width: 100%;
+}
+.information-button{
+    font-size: 0.9em;
+    min-width: max-content;
+
+}
+.download-icon{
+    width: 40px;
+    height: 40px;
+
+}
+#car-current-state{
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+}
+.validity-date{
+    font-size: 0.7em;
 }
 
-.cars{
-    display: flex;
-    font-size: 1.2em;
-    justify-content: center;;
-    
-}
-.car-pointer{
-    width:40px;
-    height:40px;
-}
 @media (max-width: 1366px){
     .portal-name{
         display: none;
@@ -315,11 +382,13 @@ p{
     .menu{
         gap: 3vw;
     }
+
 }
 
 
 
 @media (max-width: 768px){
+
 
     .portal-name{
         display: none;
@@ -373,61 +442,75 @@ p{
     .mobile-menu-item-active{
         color: var(--active-menu-option);
     }
-
     main {
-
         grid-template-columns: 1fr;
         grid-template-rows: auto;
         gap: 1em;
         height: max-content;
         font-size: 15px;
-
-      }
-      .grid-container h1{
-        font-size: 1.2rem;
-      }
-    
-      .grid-container {
-        width: 100%;
-        height: auto;
-        overflow: visible;
-        padding-bottom: 1em;
-        padding-left: 0;
       }
  
-    
-      #map {
-        grid-column: 1;
-        grid-row: auto;
-        display: flex;
-        padding:0 0 1em 0;
 
-      }
-    
-      .map-container {
-        width: 90%;
-   
-      }
-    
-      .map-cars {
+    #buttons{
         flex-direction: column;
-        align-items: center;
-      }
-    
-      .inside-grid-container {
-        width: 90%;
-      }
-    
-      #statistics button {
-        height: 2em;
-      }
-      .cars{
-        display: none;
-      }
+    }
+    button{
+        width: 100%;
+        height: 3em;
+
+    }
+
+    h1{
+        font-size: 1.2em;
+    }
+    p{
+        font-size:1em;
+    }
+
+    #vehicle-information{
+        grid-column-start: 1;
+        grid-row-start: 4;
+        min-width: 0;
+    }
+
+    #vehicle-information-data-labels-values-image{
+        flex-wrap:wrap;
+    }
+    #vehicle-image{
+        width: 100%;
+    }
+    #vehicle-information-data-labels{
+        width: 50%;
+    }
+    #vehicle-information-data-values{
+        width: 50%;
+    }
+    #inside-grid-container-vehicle-information{
+        gap: 1em;
+        min-width: 0;
+    }
+    #vehicle-image{
+        order: -1;
+        margin-bottom: 1em;
+    }
+    #information-buttons{
+        flex-direction: column;
+        display: flex;
+        justify-content: center;
+        gap: 1em;
+
+    }
+    .map-container{
+        width: 100%;
+    }
+    #car-picture{
+        width: 280px;
+        height: auto;
+    }
+    .icon-add-remove,
+    .download-icon{
+        width: 30px;
+        height: auto;
+    }
 
 }
-    
-
-
-
-
