@@ -13,7 +13,7 @@ body{
     margin: 0;
     padding: 0;
     height: 100vh;
-    box-sizing: border-box;
+    
     font-size: 1rem;
     
 }
@@ -47,7 +47,7 @@ body{
     height: 100%;
 }
 #logo{
-    padding: 0 0 5 5px;
+    padding: 0 0 5px 5px;
     width: 70px;
     height: 70px; 
     cursor:pointer;
@@ -106,8 +106,6 @@ body{
     gap: 15px;
 }
 .profile-image{
-
-    box-sizing: border-box;
     display:flex;
     justify-content: center;
     width: 40px;
@@ -134,7 +132,6 @@ main{
     display: grid;
     grid-template-columns: repeat(2, 1fr); 
     grid-template-rows: 3fr 2fr 5fr; 
-    box-sizing: border-box;
     gap: 1em;
     padding: calc(var(--header-height) + 1em) 1.5em 1.5em 1.5em;
     min-height: 100vh;

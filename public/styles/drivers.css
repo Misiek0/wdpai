@@ -14,7 +14,7 @@ body{
     padding: 0;
     height: 100vh;
     
-    font-size: 1rem;
+
     
 }
 .site-header {
@@ -107,7 +107,7 @@ body{
 }
 .profile-image{
 
-    box-sizing: border-box;
+
     display:flex;
     justify-content: center;
     width: 40px;
@@ -133,7 +133,7 @@ main{
     display: grid;
     grid-template-columns: repeat(2, 1fr); 
     grid-template-rows: 7fr 23fr 50fr;
-    box-sizing: border-box;
+
     gap: 1em;
     padding: calc(var(--header-height) + 1em) 1.5em 1.5em 1.5em;
 
@@ -181,22 +181,22 @@ button:hover{
     flex-direction: column;
     gap: 0.5em;
 }
-#vehicle-summary{
+#driver-summary{
     grid-column-start: 1;
     justify-content: center;
 }
-#vehicle-list{
+#driver-list{
     grid-column-start: 1;
     overflow-y: auto;
     overflow-x: hidden;
     min-width:max-content;
     padding: 1em;
 }
-#vehicle-list::-webkit-scrollbar {
+#driver-list::-webkit-scrollbar {
     width: 0px; 
   }
 
-#vehicle-information{
+#driver-information{
     grid-column-start: 2;
     grid-row-start:1;
     grid-row-end: span 3;
@@ -211,7 +211,7 @@ button:hover{
     min-height: max-content;
 
 }
-#inside-grid-container-vehicle-summary{
+#inside-grid-container-driver-summary{
     height: 85%;
     align-self: center;
     height: max-content;
@@ -226,8 +226,8 @@ p{
     width: 100%;
     font-size: 0.9em;
 }
-.vehicles-data-labels, 
-.vehicles-data-values{
+.drivers-data-labels, 
+.drivers-data-values{
     display: flex;
     flex-direction: column;
     gap: 0.1em;
@@ -250,7 +250,7 @@ p{
 .on-the-road{
     background-color: #FB0202;
 }
-.in-service{
+.on-leave{
     background-color: #000000;
 }
 h1{
@@ -262,20 +262,20 @@ h1{
 
 }
 
-#vehicles-table {
+#drivers-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.85em;
     
   }
   
-  #vehicles-table th, #vehicles-table td {
+  #drivers-table th, #drivers-table td {
     text-align: center;
     padding: 0.5em;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
   }
-  #vehicles-table tbody{
+  #drivers-table tbody{
     font-size: 0.8em;
   }
   
@@ -291,61 +291,65 @@ h1{
   .status-black { background-color: #000000; }
 
 
-  #inside-grid-container-vehicle-list{
+  #inside-grid-container-driver-list{
     min-width: max-content;
-
-    
-
 }
-#vehicle-information{
+
+#driver-information{
     padding: 1em;
     min-height: max-content;
 }
-#inside-grid-container-vehicle-information{
+#inside-grid-container-driver-information{
     height: 95%;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 1em;
-
     min-width: max-content;
     justify-content: space-between;
 }
-#vehicle-information-data-labels-values-image{
+#driver-information-data-labels-values-image{
     width: 100%;
     display: flex;
     justify-content: space-between;
-
 }
 
-.vehicle-information-data-labels-values{
+.driver-information-data-labels-values{
     display: flex;
     flex-direction:column;
     font-size: 0.8em;
     height: max-content;
-    gap: 0.2em;
+    gap: 0.5em;
     white-space: nowrap;
-
 }
-#vehicle-information-data-values{
+#driver-information-data-values{
     align-items: center;
 }
-#car-picture{
+#driver-picture{
     width: 221px;
     height: auto;
 }
-#vehicle-image{
+#driver-image{
     height: max-content;
     width: max-content;
     padding: 0;
+    overflow: hidden;
 }
-.map-container{
-    padding: 0;
+.report-container{
+    padding: 0.5em;
     border-radius: 20px;
     border: 2px solid #1E3A8A;
     height: 30vh;
-    width: 70%;
-    overflow: hidden;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.8em;
+    gap: 0.5em;
+}
+.report{
+    align-self: start;
+    margin-left: 0.2em;
 }
 #information-buttons{
     display: flex;
@@ -356,14 +360,12 @@ h1{
 .information-button{
     font-size: 0.9em;
     min-width: max-content;
-
 }
 .download-icon{
     width: 40px;
     height: 40px;
-
 }
-#car-current-state{
+#driver-current-state{
     display: flex;
     gap: 0.5em;
     align-items: center;
@@ -382,14 +384,9 @@ h1{
     .menu{
         gap: 3vw;
     }
-
 }
 
-
-
 @media (max-width: 768px){
-
-
     .portal-name{
         display: none;
     }
@@ -420,11 +417,9 @@ h1{
         color: white;
         transition:  transform 0.3s ease;
         z-index: 1000;
-
     }
     .mobile-menu-container.active {
         transform: translateX(0);
-        
     }
 
     body.menu-open {
@@ -437,7 +432,6 @@ h1{
         list-style: none;
         padding: 1em;
         border: 0;
-
     }
     .mobile-menu-item-active{
         color: var(--active-menu-option);
@@ -448,16 +442,14 @@ h1{
         gap: 1em;
         height: max-content;
         font-size: 15px;
-      }
+    }
  
-
     #buttons{
         flex-direction: column;
     }
     button{
         width: 100%;
         height: 3em;
-
     }
 
     h1{
@@ -467,42 +459,42 @@ h1{
         font-size:1em;
     }
 
-    #vehicle-information{
+    #driver-information{
         grid-column-start: 1;
         grid-row-start: 4;
         min-width: 0;
     }
 
-    #vehicle-information-data-labels-values-image{
+    #driver-information-data-labels-values-image{
         flex-wrap:wrap;
         justify-content: center;
     }
+    #driver-image{
 
-    #vehicle-information-data-labels{
-        width: 50%;
-    }
-    #vehicle-information-data-values{
-        width: 50%;
-    }
-    #inside-grid-container-vehicle-information{
-        gap: 1em;
-        min-width: 0;
-    }
-    #vehicle-image{
         order: -1;
         margin-bottom: 1em;
     }
+    #driver-information-data-labels{
+        width: 50%;
+    }
+    #driver-information-data-values{
+        width: 50%;
+    }
+    #inside-grid-container-driver-information{
+        gap: 1em;
+        min-width: 0;
+    }
+
     #information-buttons{
         flex-direction: column;
         display: flex;
         justify-content: center;
         gap: 1em;
-
     }
-    .map-container{
+    .report-container{
         width: 100%;
     }
-    #car-picture{
+    #driver-picture{
         width: 280px;
         height: auto;
     }
@@ -511,5 +503,4 @@ h1{
         width: 30px;
         height: auto;
     }
-
 }

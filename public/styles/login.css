@@ -12,7 +12,7 @@ body{
     margin: 0;
     padding: 0;
     height: 100vh;
-    box-sizing: border-box;
+    
     font-size: 1rem;
     
 }
@@ -45,7 +45,7 @@ body{
     height: 100%;
 }
 #logo{
-    padding: 0 0 5 5px;
+    padding: 0 0 5px 5px;
     width: 70px;
     height: 70px; 
     cursor:pointer;
@@ -181,7 +181,7 @@ a:link{
 #login-form>button{
     color:#FFFFFF;
     letter-spacing: 2px;
-    background: #1E3A8A;
+    background: var(--button-color);
     text-align: center;
 }
 #right-section{
