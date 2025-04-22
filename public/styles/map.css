@@ -1,0 +1,256 @@
+:root{
+    --header-height: 10vh;
+    --button-color: #1E3A8A;
+    --active-menu-option: #3B4F7D;
+    font-size: 24px;
+}
+*{
+    box-sizing: border-box;
+}
+
+body{
+    background-color: #E6F0FF;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    
+
+    
+}
+.site-header {
+    position: fixed;
+    width: 100%;
+    font-family: 'Krona One', sans-serif;
+    background-color: #FFFFFF;  
+    top: 0;
+    z-index: 1001; 
+    height: var(--header-height);
+
+}
+.header-container{
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 0.5em;
+}
+.logo-portal-name-section{
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+}
+.logo-section {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+#logo{
+    padding: 0 0 5px 5px;
+    width: 70px;
+    height: 70px; 
+    cursor:pointer;
+}
+#burger-menu{
+    display: none;
+}
+.portal-name{
+    font-size:1.5rem;
+    letter-spacing: 0.05em;
+    color: #000000;
+    cursor: pointer;
+}
+
+.menu-section{
+
+    display: flex;
+    justify-content: center;
+
+
+}
+#mobile-menu{
+    display: none;
+    flex-direction: column;
+    gap: 1em;
+    background-color: white;
+    position: absolute;
+    top: var(--header-height);
+    left: 0;
+    width: 100%;
+    padding: 1em;
+    list-style: none;
+    border-top: 1px solid #E6F0FF;
+}
+.menu{
+    color: #16213D;
+    font-size: 0.9rem;
+    display: flex;
+    list-style: none;
+    gap:7vw;
+    padding-left: 0;
+    
+}
+.menu li:hover{
+    cursor: pointer;
+    transform: scale(1.1);
+}
+.menu-item-active{
+    color: var(--active-menu-option);
+}
+
+
+.profile-section{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.profile-image{
+
+
+    display:flex;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    background: #F3F3F3;
+    border: 1px solid rgba(0, 0, 0, 0.7);
+    border-radius: 100%;
+}
+#question{
+    width:22px;
+}
+.profile-name{
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: 'JejuGothic', sans-serif;
+    letter-spacing: 2px;
+}
+main{
+    height: 100vh;
+    font-family: 'JejuGothic',sans-serif;
+    cursor: default;
+    display: grid;
+    grid-template-columns: 3fr 1fr; 
+    gap: 1em;
+    padding: calc(var(--header-height) + 1em) 1.5em 1.5em 1.5em;
+
+}
+.grid-container{
+    display: flex;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px, rgba(17, 17, 26, 0.1) 0px 24px 80px;
+    width: 100%;
+    height:100%;
+    align-self: center;
+    overflow-y: auto; 
+    min-height: max-content;
+}
+#list-container{
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    min-width: max-content;
+    min-height: 0;
+    gap: 0.5em;
+
+
+}
+#list-container::-webkit-scrollbar {
+    width: 0px; 
+  }
+.list-item{
+    display: flex;
+    width: 100%;
+    height: max-content;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+}
+.list-item:hover{
+    cursor:pointer;
+    transform: scale(1.1);
+}
+.vehicle-icon{
+    width: 40px;
+    height: auto;
+}
+
+@media (max-width: 1366px){
+    .portal-name{
+        display: none;
+    }
+    li{
+        font-size: 0.8em;
+    }
+    .menu{
+        gap: 3vw;
+    }
+}
+
+@media (max-width: 768px){
+    .portal-name{
+        display: none;
+    }
+    .menu-section{
+        display: none;
+    }
+    #logo{
+        display: none;
+    }
+    #burger-menu {
+        display: block;
+        width: 2em;
+        height: auto;
+        cursor: pointer;
+        position: relative;
+        z-index: 1002; 
+    }
+    .mobile-menu-container {
+        font-family: 'Krona One', sans-serif;
+        font-size: 1rem;
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        width: 60vw;
+        transform: translateX(-100%);
+        height: calc(100vh - var(--header-height));
+        background-color: #FFFFFF;
+        color: white;
+        transition:  transform 0.3s ease;
+        z-index: 1000;
+    }
+    .mobile-menu-container.active {
+        transform: translateX(0);
+    }
+
+    body.menu-open {
+        overflow: hidden;
+    }
+    #mobile-menu{
+        display: flex;
+        flex-direction: column;
+        gap: 2em;
+        list-style: none;
+        padding: 1em;
+        border: 0;
+    }
+    .mobile-menu-item-active{
+        color: var(--active-menu-option);
+    }
+    main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+
+        height: 100vh;
+        font-size: 15px;
+        padding: calc(var(--header-height)) 0 0 0 ;
+    }
+    #list-container{
+        display: none;
+    }  
+    #map-container{
+        border-radius: 0;
+    }
+}
