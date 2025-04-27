@@ -12,6 +12,7 @@ Routing::get('drivers','DefaultController');
 Routing::get('map','DefaultController');
 Routing::get('reports','DefaultController');
 Routing::get('','DefaultController');
+Routing::post('login', 'SecurityController');
 
 
 Routing::run($path);

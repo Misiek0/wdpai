@@ -43,14 +43,23 @@
         <div id="left-section">
             <div class="form-parent">
                 <h1>AutoFlow</h1>
-                <form id="login-form">
+                <form id="login-form" action="login" method="POST">
                     
                     <div id="mobile-icon-div">
                         <img id="mobile-icon" src="public/images/AutoFlowLogo.png" alt="AutoFlow - Logo">
                     </div>
+                    <div class="messages">
+                        <?php if (isset($messages)){
+                            foreach($messages as $message){
+                                echo $message;
+                            }
+                        }
+
+                        ?>
+                    </div>
                     <p>Don't have an account?<a href="#">Sign Up.</a></p>
-                    <input type="email" placeholder="Enter your email">
-                    <input type="password" placeholder="Enter your password">
+                    <input name="email" type="text" placeholder="Enter your email">
+                    <input name="password" type="password" placeholder="Enter your password">
                     <a href="#" class="forgot-password">Forgot password?</a>
                     <button type="submit">Log in</button>
                 </form>

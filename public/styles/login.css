@@ -230,6 +230,9 @@ a {
 a:visited{
     color: inherit;
 }
+.messages{
+    align-self: center;
+}
 @media (max-width: 1366px){
     .portal-name{
         display: none;
