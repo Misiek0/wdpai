@@ -4,35 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoFlow - Dashboard</title>
-    <link rel="icon" href="../images/AutoFlowFavicon.png" type="image/x-icon">
-    <link href="../styles/dashboard.css" rel="stylesheet">
+    <link rel="icon" href="public/images/AutoFlowFavicon.png" type="image/x-icon">
+    <link href="public/styles/dashboard.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jeju+Gothic&display=swap" rel="stylesheet">
-    <script src="../scripts/app.js" defer></script>
+    <script src="public/scripts/app.js" defer></script>
 </head>
 <body id="dashboard-page">
     <header class = "site-header">
         <div class="header-container">
             <div class="logo-portal-name-section">
                 <div class="logo-section">
-                    <img id="logo"src="../images/AutoFlowLogo.png" alt="AutoFlow - Logo">
-                    <img id="burger-menu" src="../images/burger_menu.png" alt="menu" onclick=toggleMobileMenu()>
+                    <img id="logo"src="public/images/AutoFlowLogo.png" alt="AutoFlow - Logo">
+                    <img id="burger-menu" src="public/images/burger_menu.png" alt="menu" onclick=toggleMobileMenu()>
                 </div>
                 <div class="portal-name">AutoFlow</div>
             </div>
             <div class="menu-section">
                 <ul class="menu">
-                    <li class="menu-item-active">Dashboard</li>
-                    <li class="menu-item">Vehicles</li>
-                    <li class="menu-item">Drivers</li>
-                    <li class="menu-item">Map</li>
-                    <li class="menu-item">Reports</li>
+                    <li class="menu-item-active"><a href="/dashboard">Dashboard</a></li>
+                    <li class="menu-item"><a href="/vehicles">Vehicles</a></li>
+                    <li class="menu-item"><a href="/drivers">Drivers</a></li>
+                    <li class="menu-item"><a href="/map">Map</a></li>
+                    <li class="menu-item"><a href="/reports">Reports</a></li>
                 </ul>
 
             </div>
             <div class="profile-section">
                 <div class="profile-image">
-                    <img id="question" src="../images/profile-image-not-logged-in.png">
+                    <img id="question" src="public/images/profile-image-not-logged-in.png">
                 </div>
                 <div class="profile-name">
                     <span>Log in</span>
@@ -42,11 +42,11 @@
     </header>
     <div id="mobile-menu-container" class="mobile-menu-container">
         <ul class="menu" id="mobile-menu">
-            <li class="mobile-menu-item-active">Dashboard</li>
-            <li class="mobile-menu-item">Vehicles</li>
-            <li class="mobile-menu-item">Drivers</li>
-            <li class="mobile-menu-item">Map</li>
-            <li class="mobile-menu-item">Reports</li>
+            <li class="mobile-menu-item-active"><a href="/dashboard">Dashboard</a></li>
+            <li class="mobile-menu-item"><a href="/vehicles">Vehicles</a></li>
+            <li class="mobile-menu-item"><a href="/drivers">Drivers</a></li>
+            <li class="mobile-menu-item"><a href="/map">Map</a></li>
+            <li class="mobile-menu-item"><a href="/reports">Reports</a></li>
         </ul>
     </div>
     <main>
@@ -118,11 +118,11 @@
         <div id="notifications" class="grid-container">
             <h1>Notifications</h1>
             <div id="message-box" class="inside-grid-container">
-                <img class="unseen" src="../images/unread_mail.png">
+                <img class="unseen" src="public/images/unread_mail.png">
                 <div class="message">03.03.2025 11:12:00 Upcoming service deadline for vehicle #7</div>
             </div>
             <div id="message-box" class="inside-grid-container">
-                <img class="seen" src="../images/read_mail.png">
+                <img class="seen" src="public/images/read_mail.png">
                 <div class="message">01.03.2025 10:30:00 A fault registered for Vehicle #2</div>
             </div>
         </div>
@@ -181,7 +181,7 @@
                     </iframe>
                 </div>
                 <div class="cars">
-                    <img class="car-pointer"src="../images/car_pointer_black.png">
+                    <img class="car-pointer"src="public/images/car_pointer_black.png">
                     <span>car #1</span>
                 </div>
             </div>

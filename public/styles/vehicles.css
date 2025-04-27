@@ -371,6 +371,13 @@ h1{
 .validity-date{
     font-size: 0.7em;
 }
+a {
+    
+    text-decoration: none;  
+}
+a:visited{
+    color: inherit;
+}
 
 @media (max-width: 1366px){
     .portal-name{

@@ -99,6 +99,14 @@ body{
     color: var(--active-menu-option);
 }
 
+a {
+    
+    text-decoration: none;  /* usuń podkreślenie */
+}
+a:visited{
+    color: inherit;
+}
+
 
 .profile-section{
     display: flex;

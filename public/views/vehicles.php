@@ -4,35 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoFlow - Vehicles</title>
-    <link rel="icon" href="../images/AutoFlowFavicon.png" type="image/x-icon">
-    <link href="../styles/vehicles.css" rel="stylesheet">
+    <link rel="icon" href="public/images/AutoFlowFavicon.png" type="image/x-icon">
+    <link href="public/styles/vehicles.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jeju+Gothic&display=swap" rel="stylesheet">
-    <script src="../scripts/app.js" defer></script>
+    <script src="public/scripts/app.js" defer></script>
 </head>
 <body id="vehicles-page">
     <header class = "site-header">
         <div class="header-container">
             <div class="logo-portal-name-section">
                 <div class="logo-section">
-                    <img id="logo"src="../images/AutoFlowLogo.png" alt="AutoFlow - Logo">
-                    <img id="burger-menu" src="../images/burger_menu.png" alt="menu" onclick=toggleMobileMenu()>
+                    <img id="logo"src="public/images/AutoFlowLogo.png" alt="AutoFlow - Logo">
+                    <img id="burger-menu" src="public/images/burger_menu.png" alt="menu" onclick=toggleMobileMenu()>
                 </div>
                 <div class="portal-name">AutoFlow</div>
             </div>
             <div class="menu-section">
                 <ul class="menu">
-                    <li class="menu-item">Dashboard</li>
-                    <li class="menu-item-active">Vehicles</li>
-                    <li class="menu-item">Drivers</li>
-                    <li class="menu-item">Map</li>
-                    <li class="menu-item">Reports</li>
+                    <li class="menu-item"><a href="/dashboard">Dashboard</a></li>
+                    <li class="menu-item-active"><a href="/vehicles">Vehicles</a></li>
+                    <li class="menu-item"><a href="/drivers">Drivers</a></li>
+                    <li class="menu-item"><a href="/map">Map</a></li>
+                    <li class="menu-item"><a href="/reports">Reports</a></li>
                 </ul>
 
             </div>
             <div class="profile-section">
                 <div class="profile-image">
-                    <img id="question" src="../images/profile-image-not-logged-in.png">
+                    <img id="question" src="public/images/profile-image-not-logged-in.png">
                 </div>
                 <div class="profile-name">
                     <span>Log in</span>
@@ -42,17 +42,17 @@
     </header>
     <div id="mobile-menu-container" class="mobile-menu-container">
         <ul class="menu" id="mobile-menu">
-            <li class="mobile-menu-item">Dashboard</li>
-            <li class="mobile-menu-item-active">Vehicles</li>
-            <li class="mobile-menu-item">Drivers</li>
-            <li class="mobile-menu-item">Map</li>
-            <li class="mobile-menu-item">Reports</li>
+            <li class="mobile-menu-item"><a href="/dashboard">Dashboard</a></li>
+            <li class="mobile-menu-item-active"><a href="/vehicles">Vehicles</a></li>
+            <li class="mobile-menu-item"><a href="/drivers">Drivers</a></li>
+            <li class="mobile-menu-item"><a href="/map">Map</a></li>
+            <li class="mobile-menu-item"><a href="/reports">Reports</a></li>
         </ul>
     </div>
     <main>
         <div id="buttons">
-            <button id="add-button"><img class="icon-add-remove" src="../images/add_plus_white.png">Add vehicle</button>
-            <button id="remove-button"><img class="icon-add-remove" src="../images/remove_minus_white.png">Remove vehicle</button>
+            <button id="add-button"><img class="icon-add-remove" src="public/images/add_plus_white.png">Add vehicle</button>
+            <button id="remove-button"><img class="icon-add-remove" src="public/images/remove_minus_white.png">Remove vehicle</button>
         </div>
         <div id="vehicle-summary" class="grid-container">
             <div id="inside-grid-container-vehicle-summary" class="inside-grid-container">
@@ -145,7 +145,7 @@
                         <span id="car-assigned-driver" class="value">Jan Kowalski</span>
                     </div>
                     <div id="vehicle-image" class="inside-grid-container">
-                        <img id="car-picture"src="../images/fabia.png">
+                        <img id="car-picture"src="public/images/fabia.png">
                     </div>
                 </div>
                 
@@ -157,8 +157,8 @@
                         </iframe>
                     </div>
                     <div id="information-buttons">
-                        <button id="service-history-button" class="information-button"><img class="download-icon" src="../images/download_icon_white.png">Service History</button>
-                        <button id="gps-history-button" class="information-button"><img class="download-icon" src="../images/download_icon_white.png">GPS History</button>
+                        <button id="service-history-button" class="information-button"><img class="download-icon" src="public/images/download_icon_white.png">Service History</button>
+                        <button id="gps-history-button" class="information-button"><img class="download-icon" src="public/images/download_icon_white.png">GPS History</button>
                     </div>
                 
             </div>

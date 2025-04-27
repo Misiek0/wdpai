@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoFlow - Login page</title>
-    <link rel="icon" href="../images/AutoFlowFavicon.png" type="image/x-icon">
-    <link href="../styles/login.css" rel="stylesheet">
+    <link rel="icon" href="public/images/AutoFlowFavicon.png" type="image/x-icon">
+    <link href="public/styles/login.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jeju+Gothic&display=swap" rel="stylesheet">
 
@@ -16,22 +16,22 @@
         <div class="header-container">
             <div class="logo-portal-name-section">
                 <div class="logo-section">
-                    <img id="logo"src="../images/AutoFlowLogo.png" alt="AutoFlow - Logo">
+                    <img id="logo"src="public/images/AutoFlowLogo.png" alt="AutoFlow - Logo">
                 </div>
                 <div class="portal-name">AutoFlow</div>
             </div>
             <div class="menu-section">
                 <ul class="menu">
-                    <li class="menu-item">Dashboard</li>
-                    <li class="menu-item">Vehicles</li>
-                    <li class="menu-item">Drivers</li>
-                    <li class="menu-item">Map</li>
-                    <li class="menu-item">Reports</li>
+                    <li class="menu-item"><a href="/dashboard">Dashboard</a></li>
+                    <li class="menu-item"><a href="/vehicles">Vehicles</a></li>
+                    <li class="menu-item"><a href="/drivers">Drivers</a></li>
+                    <li class="menu-item"><a href="/map">Map</a></li>
+                    <li class="menu-item"><a href="/reports">Reports</a></li>
                 </ul>
             </div>
             <div class="profile-section">
                 <div class="profile-image">
-                    <img id="question" src="../images/profile-image-not-logged-in.png">
+                    <img id="question" src="public/images/profile-image-not-logged-in.png">
                 </div>
                 <div class="profile-name">
                     <span>Log in</span>
@@ -46,7 +46,7 @@
                 <form id="login-form">
                     
                     <div id="mobile-icon-div">
-                        <img id="mobile-icon" src="../images/AutoFlowLogo.png" alt="AutoFlow - Logo">
+                        <img id="mobile-icon" src="public/images/AutoFlowLogo.png" alt="AutoFlow - Logo">
                     </div>
                     <p>Don't have an account?<a href="#">Sign Up.</a></p>
                     <input type="email" placeholder="Enter your email">
@@ -61,7 +61,7 @@
             <div class="blank-rectangle">
                 <p class="experience-autoflow">Experience efficient fleet management with AutoFlow today!</p>
                 <div class="image-frame">
-                    <img class="example-dashboard"src="../images/example-dashboard.png">
+                    <img class="example-dashboard"src="public/images/example-dashboard.png">
                 </div>
             </div>
         </div>
