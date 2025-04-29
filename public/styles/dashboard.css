@@ -99,7 +99,10 @@ body{
     color: var(--active-menu-option);
 }
 
-a {
+.menu-item > a ,
+.menu-item-active > a,
+.mobile-menu-item > a,
+.mobile-menu-item-active > a{
     
     text-decoration: none;  /* usuń podkreślenie */
 }

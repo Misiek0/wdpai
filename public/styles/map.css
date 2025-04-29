@@ -176,9 +176,11 @@ main{
     width: 40px;
     height: auto;
 }
-a {
-    
-    text-decoration: none;  
+.menu-item > a ,
+.menu-item-active > a,
+.mobile-menu-item > a,
+.mobile-menu-item-active > a{
+    text-decoration: none; 
 }
 a:visited{
     color: inherit;
