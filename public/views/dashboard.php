@@ -1,3 +1,8 @@
+<?php
+$isLoggedIn = isset($_SESSION['user']);
+$name = $isLoggedIn ? $_SESSION['user']['name'] : null;
+$firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,12 +36,24 @@
 
             </div>
             <div class="profile-section">
-                <div class="profile-image">
+
+            <div class="profile-image">
+                <?php if ($isLoggedIn): ?>
+                    <div class="avatar-circle"><?= $firstNameLetter ?></div>
+                <?php else: ?>
                     <img id="question" src="public/images/profile-image-not-logged-in.png">
-                </div>
-                <div class="profile-name">
-                    <span>Log in</span>
-                </div>
+                <?php endif; ?>
+            </div>
+            <div class="profile-name">
+                <?php if ($isLoggedIn): ?>
+                    <a href="/logout"><span>Log out</span></a>
+                <?php else: ?>
+                    <a href="/login"><span>Log in</span></a>
+                <?php endif; ?>
+            </div>
+
+
+
             </div>
         </div>
     </header>
@@ -117,11 +134,11 @@
 
         <div id="notifications" class="grid-container">
             <h1>Notifications</h1>
-            <div id="message-box" class="inside-grid-container">
+            <div  class="inside-grid-container">
                 <img class="unseen" src="public/images/unread_mail.png">
                 <div class="message">03.03.2025 11:12:00 Upcoming service deadline for vehicle #7</div>
             </div>
-            <div id="message-box" class="inside-grid-container">
+            <div  class="inside-grid-container">
                 <img class="seen" src="public/images/read_mail.png">
                 <div class="message">01.03.2025 10:30:00 A fault registered for Vehicle #2</div>
             </div>

@@ -1,3 +1,8 @@
+<?php
+$isLoggedIn = isset($_SESSION['user']);
+$name = $isLoggedIn ? $_SESSION['user']['name'] : null;
+$firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,12 +35,22 @@
                 </ul>
             </div>
             <div class="profile-section">
-                <div class="profile-image">
+
+            <div class="profile-image">
+                <?php if ($isLoggedIn): ?>
+                    <div class="avatar-circle"><?= $firstNameLetter ?></div>
+                <?php else: ?>
                     <img id="question" src="public/images/profile-image-not-logged-in.png">
-                </div>
-                <div class="profile-name">
-                    <span>Log in</span>
-                </div>
+                <?php endif; ?>
+            </div>
+            <div class="profile-name">
+                <?php if ($isLoggedIn): ?>
+                    <a href="/logout"><span>Log out</span></a>
+                <?php else: ?>
+                    <a href="/login"><span>Log in</span></a>
+                <?php endif; ?>
+            </div>
+
             </div>
         </div>
     </header>

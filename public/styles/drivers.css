@@ -107,15 +107,19 @@ body{
 }
 .profile-image{
 
-
+    box-sizing: border-box;
     display:flex;
     justify-content: center;
+    align-items: center;
     width: 40px;
     height: 40px;
     padding: 8px;
     background: #F3F3F3;
     border: 1px solid rgba(0, 0, 0, 0.7);
     border-radius: 100%;
+    font-size: 0.7em;
+    cursor: pointer;
+    
 }
 #question{
     width:22px;
@@ -376,11 +380,15 @@ h1{
 .menu-item > a ,
 .menu-item-active > a,
 .mobile-menu-item > a,
-.mobile-menu-item-active > a{
+.mobile-menu-item-active > a,
+.profile-name>a{
     text-decoration: none; 
 }
 a:visited{
     color: inherit;
+}
+.avatar-circle{
+    font-family: 'JeJuGothic', sans-serif;
 }
 
 @media (max-width: 1366px){

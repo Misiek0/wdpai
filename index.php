@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 require 'Routing.php';
 
@@ -12,7 +13,16 @@ Routing::get('drivers','DefaultController');
 Routing::get('map','DefaultController');
 Routing::get('reports','DefaultController');
 Routing::get('','DefaultController');
+
+Routing::get('login', 'SecurityController');
 Routing::post('login', 'SecurityController');
+
+Routing::get('register', 'SecurityController');
+Routing::post('register','SecurityController');
+
+Routing::get('logout','SecurityController');
+
+
 
 
 Routing::run($path);

@@ -18,7 +18,7 @@ class UserRepository extends Repository{
 
         if($user == false){
             return null;
-            //todo exception zamiast nulla
+
         }
 
         return new User(
@@ -28,6 +28,23 @@ class UserRepository extends Repository{
             $user['surname']
         );
 
+    }
+
+    public function addUser(string $name, string $surname, string $email, string $password): bool {
+        try {
+            $stmt = $this->database->connect()->prepare('
+                INSERT INTO users (name, surname, email, password)
+                VALUES (?, ?, ?, ?)
+            ');
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+            $stmt->execute([$name, $surname, $email, $hashedPassword]); 
+            return true;
+        } catch (PDOException $e) {
+            if ($e->getCode() == '23505') { 
+                throw new Exception("Email already exists!");
+            }
+            throw $e; 
+        }
     }
 
 }

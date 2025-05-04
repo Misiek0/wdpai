@@ -8,7 +8,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoFlow - Log in</title>
+    <title>AutoFlow - Sign up</title>
     <link rel="icon" href="public/images/AutoFlowFavicon.png" type="image/x-icon">
     <link href="public/styles/login.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
 
 
 </head>
-<body id="login-page">
+<body id="register-page">
     <header class = "site-header">
         <div class="header-container">
             <div class="logo-portal-name-section">
@@ -58,31 +58,28 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
         <div id="left-section">
             <div class="form-parent">
                 <h1>AutoFlow</h1>
-                <form id="login-form" action="login" method="POST">
+                <form id="register-form" action="register" method="POST">
                     
                     <div id="mobile-icon-div">
                         <img id="mobile-icon" src="public/images/AutoFlowLogo.png" alt="AutoFlow - Logo">
                     </div>
                     <div class="messages">
-                        <?php 
-                        if (isset($messages)) {
-                            foreach ($messages as $message) {
+                        <?php if (isset($messages)){
+                            foreach($messages as $message){
                                 echo $message;
                             }
                         }
 
-
-                        if (isset($_SESSION['error_message'])) {
-                            echo $_SESSION['error_message'];
-                            unset($_SESSION['error_message']);
-                        }
                         ?>
                     </div>
-                    <p>Don't have an account?<a href="/register">Sign Up.</a></p>
-                    <input name="email" type="text" placeholder="Enter your email">
-                    <input name="password" type="password" placeholder="Enter your password">
-                    <a href="#" class="forgot-password">Forgot password?</a>
-                    <button type="submit">Log in</button>
+                    <p>Already have an account?<a href="/login">Log In.</a></p>
+                    <input class="form" name="name" type="text" placeholder="Enter your name" required>
+                    <input class="form" name="surname" type="text" placeholder="Enter your surname" required>
+                    <input class="form" name="email" type="text" placeholder="Enter your email" required>
+                    <input class="form" name="password" type="password" placeholder="Enter your password" required>
+                    <input class="form" name="confirmedPassword" type="password" placeholder="Confirm password">
+                    
+                    <button class="form" type="submit">Sign up</button>
                 </form>
         
             </div>
