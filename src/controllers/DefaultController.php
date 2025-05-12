@@ -18,10 +18,7 @@ class DefaultController extends AppController{
         $this->render('dashboard');
     }
 
-    public function vehicles(){
-        $this->authorize();
-        $this->render('vehicles');
-    }
+    
 
     public function drivers(){
         $this->authorize();

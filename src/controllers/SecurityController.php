@@ -66,6 +66,7 @@ class SecurityController extends AppController{
             unset($_SESSION['login_block_time']);
 
             $_SESSION['user'] = [
+                'id' => $user->getId(),
                 'email' => $user->getEmail(),
                 'name' => $user->getName(),
                 'surname' => $user->getSurname()

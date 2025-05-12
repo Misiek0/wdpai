@@ -13,7 +13,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     <link href="public/styles/drivers.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jeju+Gothic&display=swap" rel="stylesheet">
-    <script src="public/scripts/app.js" defer></script>
+    <script src="public/scripts/dynamicMenu.js" defer></script>
 </head>
 <body id="drivers-page">
     <header class="site-header">

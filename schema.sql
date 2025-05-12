@@ -27,17 +27,19 @@ CREATE TABLE vehicles(
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     brand VARCHAR(50) NOT NULL,
     model VARCHAR(50) NOT NULL,
-    reg_number VARCHAR(20) NOT NULL UNIQUE,
+    reg_number VARCHAR(9) NOT NULL UNIQUE,
     mileage INTEGER CHECK(mileage >= 0), --in km
-    vehicle_inspection_expiry DATE,
-    oc_ac_expiry DATE,
-    vin VARCHAR(17) UNIQUE CHECK (LENGTH(vin) = 17 ),
+    vehicle_inspection_expiry DATE NOT NULL,
+    oc_ac_expiry DATE NOT NULL,
+    vin VARCHAR(17) UNIQUE CHECK (LENGTH(vin) = 17 ) NOT NULL,
     avg_fuel_consumption FLOAT CHECK (avg_fuel_consumption > 0),
     status vehicle_status NOT NULL DEFAULT 'available',
     current_latitude DECIMAL(10, 8) CHECK (current_latitude BETWEEN -90 AND 90),
     current_longitude DECIMAL(11, 8) CHECK (current_longitude BETWEEN -180 AND 180),
-    last_location_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    last_location_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    photo VARCHAR(255)
 );
+
 
 CREATE TABLE vehicle_location_history(
     id SERIAL PRIMARY KEY,

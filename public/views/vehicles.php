@@ -13,7 +13,12 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     <link href="public/styles/vehicles.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jeju+Gothic&display=swap" rel="stylesheet">
-    <script src="public/scripts/app.js" defer></script>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script src="public/scripts/dynamicMenu.js" defer></script>
+    <script src="public/scripts/vehicles.js" defer></script>
 </head>
 <body id="vehicles-page">
     <header class = "site-header">
@@ -82,20 +87,20 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                             <span>Available</span>
                         </div>
                         <div class="label">
-                            <div class="status-dot on-the-road"></div>
+                            <div class="status-dot on_road"></div>
                             <span>On the road</span>
                         </div>
                         <div class="label">
-                            <div class="status-dot in-service"></div>
+                            <div class="status-dot in_service"></div>
                             <span>In service</span>
                         </div>
                     </div>
                   
                     <div class="vehicles-data-values"> 
-                      <div class="value" id="vehicles-total-number">1</div>
-                      <div class="value" id="vehicles-available">1</div>
-                      <div class="value" id="vehicles-on-the-road">1</div>
-                      <div class="value" id="vehicles-in-service">1</div>
+                      <div class="value" id="vehicles-total-number"><?= $stats['total'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-available"><?= $stats['available'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-on-the-road"><?= $stats['on_the_road'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-in-service"><?= $stats['in_service'] ?? 0 ?></div>
                     </div>
                 </div>
             </div>
@@ -113,75 +118,69 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                         <th>Status</th>
                       </tr>
                     </thead>
+
                     <tbody>
-                      <!-- Rows will be added dynamically -->
+                        <?php foreach ($vehicles as $vehicle): ?>
+                        <tr>
+                            <td><?= $vehicle->getId() ?></td>
+                            <td><?= htmlspecialchars($vehicle->getBrand()) ?></td>
+                            <td><?= htmlspecialchars($vehicle->getModel()) ?></td>
+                            <td><?= htmlspecialchars($vehicle->getRegNr()) ?></td>
+                            <td>
+                                <div class="status-dot-table <?= htmlspecialchars($vehicle->getStatus()) ?>"></div>
+                                
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
                     </tbody>
                   </table>
             </div>
             </div>
         </div>
+        
         <div id="vehicle-information" class="grid-container">
             <h1>Information</h1>
             <div id="inside-grid-container-vehicle-information" class="inside-grid-container">
-                <div id="vehicle-information-data-labels-values-image">
-                    <div id="vehicle-information-data-labels" class="vehicle-information-data-labels-values">
-                        <span class="info-label">Brand:</span>
-                        <span class="info-label">Model:</span>
-                        <span class="info-label">Reg. Nr.:</span>
-                        <span class="info-label">Mileage:</span>
-                        <span class="info-label">Vehicle inspection:</span>
-                        <span class="info-label">OC/AC:</span>
-                        <span class="info-label">VIN:</span>
-                        <span class="info-label">Avg. fuel consumption:</span>
-                        <span class="info-label">Current state:</span>
-                        <span class="info-label">Current localization:</span>
-                        <span class="info-label">Assigned driver:</span>
-                    </div>
-                    <div id="vehicle-information-data-values" class="vehicle-information-data-labels-values">
-                        <span id="car-brand" class="value">Skoda</span>
-                        <span id="car-model" class="value">Fabia</span>
-                        <span id="car-reg-nr" class="value">KR 4FM11</span>
-                        <span id="car-mileage" class="value">120 000 km</span>
-                        <div id="vahicle-inspection" class="value">
-                            <span>valid</span>
-                            <span class="validity-date">(until 23.06.2025)</span>
-                        </div>
-                        <div id="car-oc-ac" class="value">
-                            <span>valid</span>
-                            <span class="validity-date">(until 07.04.2025)</span>
-                        </div>
-                        <span id="car-vin" class="value">1HGCM82633A123456</span>
-                        <span id="car-avg-fuel-consumption" class="value">6.5 l</span>
-                        <div id="car-current-state" class="value">
-                            <div class="status-dot available"></div>
-                            <span>Available</span>
-                        </div>
-                        <span id="car-current-localization" class="value">Newag, Nowy Sącz, Poland</span>
-                        <span id="car-assigned-driver" class="value">Jan Kowalski</span>
-                    </div>
-                    <div id="vehicle-image" class="inside-grid-container">
-                        <img id="car-picture"src="public/images/fabia.png">
-                    </div>
+                <div id="no-vehicle-selected" class="no-vehicle-selected">
+                    <span>Choose vehicle</span>
                 </div>
-                
-                    <div class="map-container" class="inside-grid-container">
-                        <iframe id="map-api" 
-                        src="https://maps.google.com/maps?q=Krakow&output=embed"
-                        frameborder="0"
-                        style="width:100%;height:100%">
-                        </iframe>
-                    </div>
-                    <div id="information-buttons">
-                        <button id="service-history-button" class="information-button"><img class="download-icon" src="public/images/download_icon_white.png">Service History</button>
-                        <button id="gps-history-button" class="information-button"><img class="download-icon" src="public/images/download_icon_white.png">GPS History</button>
-                    </div>
-                
+                <div id="vehicle-details-container" style="display: none;">
+                    <!-- Dynamic data from fetch api-->
+                </div>
             </div>
+        </div> 
 
-
-
-            </div>
-        </div>
     </main>
+    <div id="add-vehicle-popup" class="grid-container">
+    <h1>Add New Vehicle</h1>
+        <form id="add-vehicle-form" action="addVehicle" method="POST" ENCTYPE="multipart/form-data">
+        <?php 
+                        if (isset($messages)) {
+                            foreach ($messages as $message) {
+                                echo $message;
+                            }
+                        }
+
+
+                        if (isset($_SESSION['error_message'])) {
+                            echo $_SESSION['error_message'];
+                            unset($_SESSION['error_message']);
+                        }
+                        ?>
+            <input name="brand" type="text" placeholder="Enter brand">
+            <input name="model" type="text" placeholder="Enter model">
+            <input name="reg_number" type="text" placeholder="Enter Registration Number">
+            <input name="mileage" type="number" placeholder="Enter mileage">
+            <Label>Vehicle inspection expires: <input name="vehicle_inspection_expiry" type="date"></label>
+            <Label>Vehicle OC/AC expires: <input name="oc_ac_expiry" type="date"></label>
+            <input name="vin" type="text" placeholder="Enter VIN">
+            <label>Vehicle photo: <input name="file" type="file"></label>
+            <div id="buttons">
+            <button id="inside-form-add-vehicle" type="submit">Add vehicle</button>
+            <button id="inside-form-cancel" type="button">Cancel</button>
+            </div>
+        </form>
+        
+    </div>
 </body>
 </html>
