@@ -3,6 +3,9 @@
 require_once 'AppController.php';
 require_once __DIR__.'/../models/Vehicle.php';
 require_once __DIR__.'/../repository/VehicleRepository.php';
+require_once __DIR__.'/../service/FuelGenerator.php';
+require_once __DIR__.'/../service/LocationGenerator.php';
+require_once __DIR__.'/../service/StatusGenerator.php';
 
 
 class VehicleController extends AppController{
@@ -13,11 +16,17 @@ class VehicleController extends AppController{
 
     private $messages = [];
     private $vehicleRepository;
+    private $fuelGenerator;
+    private $locationGenerator;
+    private $statusGenerator;
 
     public function __construct()
     {
         parent::__construct();
         $this->vehicleRepository = new VehicleRepository();
+        $this->fuelGenerator = new FuelGenerator();
+        $this->locationGenerator = new LocationGenerator();
+        $this->statusGenerator = new StatusGenerator();
         
     }
 
@@ -31,30 +40,6 @@ class VehicleController extends AppController{
             'stats' => $stats,
             'vehicles' => $vehicles
         ]);
-    }
-
-    function generateRandomFuelConsumption() {
-        $min = 5.0;
-        $max = 13.0;
-        $randomFuelConsumption = mt_rand() / mt_getrandmax() * ($max - $min) + $min;
-        return round($randomFuelConsumption, 1);
-    }
-
-    function generateRandomStatus(): string {
-        $statuses = ['available', 'on_road', 'in_service'];
-        return $statuses[array_rand($statuses)];
-    }
-    
-    function generateRandomCoordinatesInPoland(): array {
-        $minLat = 49.0;
-        $maxLat = 54.0;
-        $minLon = 14.1;
-        $maxLon = 23.0;
-    
-        $lat = mt_rand() / mt_getrandmax() * ($maxLat - $minLat) + $minLat;
-        $lon = mt_rand() / mt_getrandmax() * ($maxLon - $minLon) + $minLon;
-    
-        return [round($lat, 6), round($lon, 6)];
     }
 
     public function addVehicle(){
@@ -82,8 +67,9 @@ class VehicleController extends AppController{
                 ]);
             }
             
-            $avg_fuel_consumption = $this->generateRandomFuelConsumption(); 
-            [$lat, $lon] = $this->generateRandomCoordinatesInPoland();
+            $avg_fuel_consumption = $this->fuelGenerator->generate();
+            [$lat, $lon] = $this->locationGenerator->generate();
+            $status = $this->statusGenerator->generate();
 
             $vehicle = new Vehicle(
                 brand: $brand,
@@ -95,7 +81,7 @@ class VehicleController extends AppController{
                 vin: $vin,
                 photo: $_FILES['file']['name'],
                 id: null,
-                status: $this->generateRandomStatus(),
+                status: $status,
                 avg_fuel_consumption: $avg_fuel_consumption,
                 current_latitude: $lat,
                 current_longitude: $lon

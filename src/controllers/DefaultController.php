@@ -12,22 +12,9 @@ class DefaultController extends AppController{
         $this->render('login');
     }
 
-    public function dashboard()
-    {
-        $this->authorize();
-        $this->render('dashboard');
-    }
-
-    
-
     public function drivers(){
         $this->authorize();
         $this->render('drivers');
-    }
-
-    public function map(){
-        $this->authorize();
-        $this->render('map');
     }
 
     public function reports(){

@@ -130,7 +130,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                         <span class="info-label">Driver license:</span>
                         <span class="info-label">Medical examination:</span>
                         <span class="info-label">Assigned vehicle:</span>
-                        <span class="info-label">Current state:</span>
+                        <span class="info-label">State:</span>
                     </div>
                     <div id="driver-information-data-values" class="driver-information-data-labels-values">
                         <span id="driver-name" class="value">Jan</span>

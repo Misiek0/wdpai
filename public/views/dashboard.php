@@ -12,8 +12,11 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     <link rel="icon" href="public/images/AutoFlowFavicon.png" type="image/x-icon">
     <link href="public/styles/dashboard.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Jeju+Gothic&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Jeju+Gothic&display=swap" rel="stylesheet">
     <script src="public/scripts/dynamicMenu.js" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
 </head>
 <body id="dashboard-page">
     <header class = "site-header">
@@ -93,10 +96,10 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     </div>
                   
                     <div class="vehicles-data-values"> 
-                      <div class="value" id="vehicles-total-number">1</div>
-                      <div class="value" id="vehicles-available">1</div>
-                      <div class="value" id="vehicles-on-the-road">1</div>
-                      <div class="value" id="vehicles-in-service">1</div>
+                      <div class="value" id="vehicles-total-number"><?= $stats['total_vehicles'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-available"><?= $stats['available'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-on-the-road"><?= $stats['on_the_road'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-in-service"><?= $stats['in_service'] ?? 0 ?></div>
                     </div>
                 </div>
             </div>
@@ -159,8 +162,8 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     </div>
                 </div>
                 <div class="fuel-consumption-data-values"> 
-                    <div class="value" id="total-fuel-consumption">1 l/km</div>
-                    <div class="value" id="average-fuel-consumption">1 l/km</div>
+                    <div class="value" id="total-fuel-consumption"><?= $stats['total_fuel'] ?? 0 ?> l/km</div>
+                    <div class="value" id="average-fuel-consumption"><?= $stats['avg_fuel'] ?? 0 ?> l/km</div>
                 </div>
                 </div>
             </div>
@@ -172,34 +175,48 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                             <span>Total fleet mileage</span>
                             </div>
                             <div class="statistics-fuel-data">
-                                <span>Average fleet mileage</span>
+                                <span>Average vehicle mileage</span>
                             </div>
                         </div>
                         <div class="fuel-consumption-data-values"> 
-                            <div class="value" id="total-fleet-mileage">1 km</div>
-                            <div class="value" id="average-fleet-mileage">1 km</div>
+                            <div class="value" id="total-fleet-mileage"><?= $stats['total_mileage'] ?? 0 ?> km</div>
+                            <div class="value" id="average-fleet-mileage"><?= $stats['avg_mileage'] ?? 0 ?> km</div>
                         </div>
                     </div>
                 </div>
-                <button>View details</button>
+                <button onclick="window.location.href='/reports'">View details</button>
             </div>
         </div>
 
 
 
         <div id="map" class="grid-container">
-            <h1>Map</h1>
+        <h1>Map</h1>
             <div class="map-cars">
                 <div class="map-container">
-                    <iframe id="map-api" 
-                    src="https://maps.google.com/maps?q=Krakow&output=embed"
-                    frameborder="0"
-                    style="width:100%;height:100%">
-                    </iframe>
+                    <div id="leaflet-map"></div>
                 </div>
+                <?php
+                // przygotuj dane PHP → JS
+                $vehicles = array_map(fn($vehicle) => [
+                    'id'                => $vehicle->getId(),
+                    'brand'             => $vehicle->getBrand(),
+                    'model'             => $vehicle->getModel(),
+                    'reg_number'        => $vehicle->getRegNr(),
+                    'current_latitude'  => $vehicle->getCurrentLatitude(),
+                    'current_longitude' => $vehicle->getCurrentLongitude()
+                ], $vehicles);
+                $icons = ['car_pointer_black.png','car_pointer_blue.png','car_pointer_bronze.png','car_pointer_red.png','car_pointer_green.png'];
+                ?>
+                <script>
+                window.dashboardVehicles = <?= json_encode($vehicles, JSON_NUMERIC_CHECK) ?>;
+                window.dashboardIcons    = <?= json_encode($icons) ?>;
+                </script>
+                    <script src="/public/scripts/dashboardMap.js" defer></script>
+
                 <div class="cars">
-                    <img class="car-pointer"src="public/images/car_pointer_black.png">
-                    <span>car #1</span>
+                    <h1 id="h1VehicleList">Vehicle list</h1>
+                    <ul id="vehicle-list"></ul>
                 </div>
             </div>
         </div>

@@ -45,11 +45,15 @@ class VehicleRepository extends Repository{
 
     public function getVehiclesStats(): array {
         $stmt = $this->database->connect()->prepare("
-            SELECT 
-                COUNT(*) as total,
-                SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) as available,
-                SUM(CASE WHEN status = 'on_road' THEN 1 ELSE 0 END) as on_the_road,
-                SUM(CASE WHEN status = 'in_service' THEN 1 ELSE 0 END) as in_service
+            SELECT
+            COUNT(*)                                AS total_vehicles,
+            SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) AS available,
+            SUM(CASE WHEN status = 'on_road'    THEN 1 ELSE 0 END) AS on_the_road,
+            SUM(CASE WHEN status = 'in_service' THEN 1 ELSE 0 END) AS in_service,
+            SUM(mileage)                            AS total_mileage,
+            ROUND(AVG(mileage))                     AS avg_mileage,
+            ROUND(SUM(avg_fuel_consumption)::numeric, 1)  AS total_fuel,
+            ROUND(AVG(avg_fuel_consumption)::numeric, 1)  AS avg_fuel
             FROM vehicles
             WHERE user_id = ?
         ");
@@ -63,7 +67,7 @@ class VehicleRepository extends Repository{
 
         $stmt = $this->database->connect()->prepare('
             SELECT id, brand, model, reg_number, mileage, vehicle_inspection_expiry,
-                oc_ac_expiry, vin, photo, status
+                oc_ac_expiry, vin, photo, status, avg_fuel_consumption, current_latitude, current_longitude
             FROM vehicles 
             WHERE user_id = ?
         ');
@@ -81,7 +85,10 @@ class VehicleRepository extends Repository{
                 $vehicle['vin'],
                 $vehicle['photo'],
                 $vehicle['id'],
-                $vehicle['status']
+                $vehicle['status'],
+                $vehicle['avg_fuel_consumption'],
+                $vehicle['current_latitude'],
+                $vehicle['current_longitude']
             );
         }
         return $result;
@@ -138,6 +145,8 @@ class VehicleRepository extends Repository{
             throw new Exception("Error updating date: " . $e->getMessage());
         }
     }
+    
+  
     
     
 

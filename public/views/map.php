@@ -14,8 +14,10 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jeju+Gothic&display=swap" rel="stylesheet">
     <script src="public/scripts/dynamicMenu.js" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
-<body id="drivers-page">
+<body id="map-page">
     <header class="site-header">
         <div class="header-container">
             <div class="logo-portal-name-section">
@@ -65,35 +67,30 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     </div>
     <main>
         <div id="map-container" class="grid-container">
-            <iframe id="map-api" 
-                src="https://maps.google.com/maps?q=Krakow&output=embed"
-                frameborder="0"
-                style="width:100%;height:100%">
-            </iframe>
+            <div id="leaflet-map"></div>
         </div>
+        <?php
+        // Przekazanie danych PHP → JS
+        $vehicles = array_map(fn($vehicle) => [
+            'id'                    => $vehicle->getId(),
+            'current_latitude'      => $vehicle->getCurrentLatitude(),
+            'current_longitude'     => $vehicle->getCurrentLongitude(),
+            'reg_number'            => $vehicle->getRegNr(),
+            'brand'                 => $vehicle->getBrand(),
+            'model'                 => $vehicle->getModel()
+        ], $vehicles);
+        $icons = ['car_pointer_black.png','car_pointer_blue.png','car_pointer_bronze.png','car_pointer_red.png','car_pointer_green.png'];
+        ?>
+        <script>
+            window.mapVehicles = <?= json_encode($vehicles, JSON_NUMERIC_CHECK) ?>;
+            window.mapIcons    = <?= json_encode($icons) ?>;
+        </script>
+        <script src="/public/scripts/mainMap.js" defer></script>
+
+        <!-- Lista pojazdów obok mapy -->
         <div id="list-container" class="grid-container">
-            <div class="list-item">
-                <img class="vehicle-icon"src="public/images/car_pointer_black.png">
-                <span>KR4FM14</span>
-                <span>Wieliczka</span>
-                
-            </div>
-            <div class="list-item">
-                <img class="vehicle-icon"src="public/images/car_pointer_black.png">
-                <span>KR4FM14</span>
-                <span>Wieliczka</span>
-                
-            </div>
-            <div class="list-item">
-                <img class="vehicle-icon"src="public/images/car_pointer_black.png">
-                <span>KR4FM14</span>
-                <span>Wieliczka</span>
-                
-            </div>
-
-
+            <ul id="vehicle-list"></ul>
         </div>
-
     </main>
 </body>
 </html>

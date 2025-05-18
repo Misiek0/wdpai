@@ -351,6 +351,7 @@ h1{
     background: #f0f0f0; 
 }
 .map-container{
+    z-index:999;
     justify-self: center;
     padding: 0;
     border-radius: 20px;
@@ -358,6 +359,11 @@ h1{
     height: 30vh;
     width: 70%;
     overflow: hidden;
+}
+.leaflet-top,
+.leaflet-left{
+    z-index: 999;
+
 }
 #information-buttons{
     display: flex;

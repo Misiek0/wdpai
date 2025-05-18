@@ -209,6 +209,7 @@ p{
 
 }
 
+
 .data-box{
     display: flex;
     justify-content: space-between;
@@ -293,6 +294,9 @@ p{
     align-self: center;
     width: max-content;
 }
+#h1VehicleList{
+    font-size: 1.2em;
+}
 
 .map-cars{
     display:flex;
@@ -301,19 +305,26 @@ p{
 
 }
 .map-container{
+    display:flex;
     padding: 0;
     border-radius: 20px;
     border: 2px solid #1E3A8A;
     height: 45vh;
     width: 30vw;
     overflow: hidden;
-    
+    z-index: 999;    
 }
+#leaflet-map {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+  }
 
 .cars{
     display: flex;
-    font-size: 1.2em;
-    justify-content: center;;
+    flex-direction: column;
+    gap: 0.5em;
+
     
 }
 .car-pointer{
@@ -323,6 +334,22 @@ p{
 .avatar-circle{
     font-family: 'JeJuGothic', sans-serif;
 }
+#vehicle-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  #vehicle-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;  
+    margin-bottom: 0.5em;
+    font-size: 1em;
+  }
+  #vehicle-list li img.list-icon {
+    width: 24px;
+    height: 24px;
+  }
 @media (max-width: 1366px){
     .portal-name{
         display: none;
@@ -334,8 +361,6 @@ p{
         gap: 3vw;
     }
 }
-
-
 
 @media (max-width: 768px){
 

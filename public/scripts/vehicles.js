@@ -133,8 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="info-label">OC/AC:</span>
           <span class="info-label">VIN:</span>
           <span class="info-label">Avg. fuel consumption:</span>
-          <span class="info-label">Current state:</span>
-          <span class="info-label">Current localization:</span>
+          <span class="info-label">State:</span>
+          <span class="info-label">Localization:</span>
           <span class="info-label">Assigned driver:</span>
         </div>
         <div id="vehicle-information-data-values" class="vehicle-information-data-labels-values">
