@@ -14,7 +14,7 @@ body{
     padding: 0;
     font-size: 1rem;
 }
-.site-header {
+.site-header { 
     position: fixed;
     width: 100%;
     font-family: 'Krona One', sans-serif;
@@ -298,7 +298,7 @@ h1{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap:0.5em;
+    gap:1em;
 }
 #vehicle-information{
     padding: 1em;
@@ -319,9 +319,12 @@ h1{
     width: 100%;
     display: flex;
     justify-content: space-between;
-
+    gap: 2em;
 }
-
+#label-value-container{
+    display: flex;
+    gap:2em;
+}
 .vehicle-information-data-labels-values{
     display: flex;
     flex-direction:column;

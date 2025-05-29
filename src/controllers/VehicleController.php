@@ -6,70 +6,79 @@ require_once __DIR__.'/../repository/VehicleRepository.php';
 require_once __DIR__.'/../service/FuelGenerator.php';
 require_once __DIR__.'/../service/LocationGenerator.php';
 require_once __DIR__.'/../service/StatusGenerator.php';
+require_once __DIR__.'/../service/Validator.php';
 
 
 class VehicleController extends AppController{
 
-    const MAX_FILE_SIZE = 1024*1024;
-    const SUPPORTED_TYPES = ['image/png','image/jpeg','image/pjpeg'];
     const UPLOAD_DIRECTORY = '/../public/uploads/';
-
+    
     private $messages = [];
     private $vehicleRepository;
+    private $driverRepository;
     private $fuelGenerator;
     private $locationGenerator;
     private $statusGenerator;
+    private $validator;
 
     public function __construct()
     {
         parent::__construct();
         $this->vehicleRepository = new VehicleRepository();
+        $this->driverRepository = new DriverRepository();
         $this->fuelGenerator = new FuelGenerator();
         $this->locationGenerator = new LocationGenerator();
         $this->statusGenerator = new StatusGenerator();
+        $this->validator = new Validator();
         
     }
 
     public function vehicles(){
         $this->authorize();
 
-        $stats = $this->vehicleRepository->getVehiclesStats();
+        $vehiclesStats = $this->vehicleRepository->getVehiclesStats();
         $vehicles = $this->vehicleRepository->getAllVehicles();
 
         $this->render('vehicles', [
-            'stats' => $stats,
+            'messages' => $this->messages,
+            'vehiclesStats' => $vehiclesStats,
             'vehicles' => $vehicles
         ]);
     }
 
     public function addVehicle(){
-        if($this->isPost() && is_uploaded_file($_FILES['file']['tmp_name']) && $this->validate($_FILES['file'])){
+        if (
+            $this->isPost() &&
+            is_uploaded_file($_FILES['file']['tmp_name']) &&
+            $this->validator->validate($_FILES['file'], $this->messages)
+        ) {
+
             move_uploaded_file(
                 $_FILES['file']['tmp_name'],
                 dirname(__DIR__).self::UPLOAD_DIRECTORY.$_FILES['file']['name']
             );
             
             
-            $brand = $this->normalizeString($_POST['brand'] ?? '');
-            $model = $this->normalizeString($_POST['model'] ?? '');
-            $reg_number = $this->normalizeRegistration($_POST['reg_number'] ?? '');
-            $vin = $this->validateVIN($_POST['vin'] ?? '');
+            $brand = $this->validator->normalizeString($_POST['brand'] ?? '');
+            $model =  $this->validator->normalizeString($_POST['model'] ?? '');
+            $reg_number =  $this->validator->normalizeRegistration($_POST['reg_number'] ?? '');
+            $vin =  $this->validator->validateVIN($_POST['vin'] ?? '');
             
             if (empty($brand) || empty($model) || !$reg_number || !$vin) {
                 $this->messages[] = 'Invalid vehicle data';
                 $vehicles = $this->vehicleRepository->getAllVehicles();
-                $stats = $this->vehicleRepository->getVehiclesStats();
+                $vehiclesStats = $this->vehicleRepository->getVehiclesStats();
 
                 return $this->render('vehicles', [
                     'messages' => $this->messages,
                     'vehicles' => $vehicles,
-                    'stats' => $stats
+                    'vehiclesStats' => $vehiclesStats,
                 ]);
             }
             
             $avg_fuel_consumption = $this->fuelGenerator->generate();
             [$lat, $lon] = $this->locationGenerator->generate();
-            $status = $this->statusGenerator->generate();
+            $status = $this->statusGenerator->generateVehicleStatus();
 
             $vehicle = new Vehicle(
                 brand: $brand,
@@ -86,46 +95,31 @@ class VehicleController extends AppController{
                 current_latitude: $lat,
                 current_longitude: $lon
             );
-            $userId = $_SESSION['user']['id'];
             
-            $this->vehicleRepository->addVehicle($vehicle);
+            $newVehicleId = $this->vehicleRepository->addVehicle($vehicle);
+            
+            if($status == 'available'){
+
+                    $allDrivers = $this->driverRepository->getAllDrivers();
+                    $available = array_filter($allDrivers, function($d) {
+                    return $d->getDriverStatus() === 'available';
+                });
+
+                if (count($available) > 0) {
+
+                    $chosen = $available[array_rand($available)];
+
+                    $this->vehicleRepository->assignDriver($newVehicleId, $chosen->getId());
+                    $this->vehicleRepository->updateVehicleStatus($newVehicleId, 'on_road');
+                    $this->driverRepository->updateDriverStatus($chosen->getId(), 'on_road');
+                }
+            };
             $this->messages[] = "Vehicle added successfully!";
 
+            header('Location: /vehicles');
+            exit;
+
         };
-        $vehicles = $this->vehicleRepository->getAllVehicles();
-        $stats = $this->vehicleRepository->getVehiclesStats();
-
-        return $this->render('vehicles', [
-            'messages' => $this->messages,
-            'vehicles' => $vehicles,
-            'stats' => $stats
-        ]);
-    }
-
-    private function normalizeString(string $input): string {
-        return ucfirst(strtolower(trim($input))); 
-    }
-    
-    private function normalizeRegistration(string $input): ?string {
-        $normalized = strtoupper(preg_replace('/\s+/', '', $input)); 
-        return preg_match('/^[A-Z]{2,3}[0-9A-Z]{3,5}$/', $normalized) ? $normalized : null;
-    }
-    private function validateVIN(string $vin): ?string {
-        return (strlen($vin) === 17 && ctype_alnum($vin)) ? strtoupper($vin) : null;
-    }
-
-    private function validate(array $file): bool
-    {
-        if ($file['size'] > self::MAX_FILE_SIZE) {
-            $this->messages[] = 'File is too large for destination file system.';
-            return false;
-        }
-
-        if (!isset($file['type']) || !in_array($file['type'], self::SUPPORTED_TYPES)) {
-            $this->messages[] = 'File type is not supported.';
-            return false;
-        }
-        return true;
     }
 
     public function api_vehicles() {
@@ -145,6 +139,7 @@ class VehicleController extends AppController{
         
         $vehicleId = (int)$_GET['id'];
         $vehicle = $this->vehicleRepository->getVehicleById($vehicleId);
+        $assignedDriver = $this->vehicleRepository->getAssignedDriverForVehicle($vehicleId);
         
         if (!$vehicle) {
             http_response_code(404);
@@ -166,8 +161,14 @@ class VehicleController extends AppController{
                 'photo'=>$vehicle->getPhoto(),
                 'avg_fuel_consumption' => $vehicle->getAvgFuelConsumption() ?? null,
                 'current_latitude'=>$vehicle->getCurrentLatitude(),
-                'current_longitude'=>$vehicle->getCurrentLongitude()
-
+                'current_longitude'=>$vehicle->getCurrentLongitude(),
+                'assigned_driver' => $assignedDriver
+                    ? [
+                        'id'      => $assignedDriver->getId(),
+                        'name'    => $assignedDriver->getName(),
+                        'surname' => $assignedDriver->getSurname(),
+                    ]
+                    : null,
             ]
         ];
         
@@ -184,7 +185,12 @@ class VehicleController extends AppController{
                 echo json_encode(['error' => 'Vehicle ID is required']);
                 return;
             }
-    
+
+            $assignedDriverId = $this->vehicleRepository->getAssignedDriverId($vehicleId);
+            if ($assignedDriverId !== null) {
+                $this->driverRepository->updateDriverStatus($assignedDriverId, 'available');
+            }
+
             $deleted = $this->vehicleRepository->deleteVehicleById((int)$vehicleId);
             if ($deleted) {
                 echo json_encode(['success' => true]);

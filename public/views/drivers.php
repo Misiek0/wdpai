@@ -14,6 +14,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jeju+Gothic&display=swap" rel="stylesheet">
     <script src="public/scripts/dynamicMenu.js" defer></script>
+    <script src="public/scripts/drivers.js" defer></script>
 </head>
 <body id="drivers-page">
     <header class="site-header">
@@ -81,20 +82,20 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                             <span>Available</span>
                         </div>
                         <div class="label">
-                            <div class="status-dot on-the-road"></div>
+                            <div class="status-dot on_road"></div>
                             <span>On the road</span>
                         </div>
                         <div class="label">
-                            <div class="status-dot on-leave"></div>
+                            <div class="status-dot on_leave"></div>
                             <span>On leave</span>
                         </div>
                     </div>
                   
                     <div class="drivers-data-values"> 
-                        <div class="value" id="drivers-total-number">1</div>
-                        <div class="value" id="drivers-available">1</div>
-                        <div class="value" id="drivers-on-the-road">1</div>
-                        <div class="value" id="drivers-on-leave">1</div>
+                        <div class="value" id="drivers-total-number"><?= $driversStats['total_drivers'] ?? 0 ?></div>
+                        <div class="value" id="drivers-available"><?= $driversStats['available'] ?? 0 ?></div>
+                        <div class="value" id="drivers-on-the-road"><?= $driversStats['on_the_road'] ?? 0 ?></div>
+                        <div class="value" id="drivers-on-leave"><?= $driversStats['on_leave'] ?? 0 ?></div>
                     </div>
                 </div>
             </div>
@@ -114,6 +115,19 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     </thead>
                     <tbody>
                         <!-- Rows will be added dynamically -->
+                    <?php foreach ($drivers as $driver): ?>
+                    <tr>
+                        <td><?= $driver->getId() ?></td>
+                        <td><?= htmlspecialchars($driver->getName()) ?></td>
+                        <td><?= htmlspecialchars($driver->getSurname()) ?></td>
+                        <td><?= htmlspecialchars($validator->validatePhoneNumber($driver->getPhone()) ?? 'Invalid number') ?></td>
+
+                        <td>
+                            <div class="status-dot-table <?= htmlspecialchars($driver->getDriverStatus()) ?>"></div>
+                            
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
@@ -121,54 +135,45 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
         <div id="driver-information" class="grid-container">
             <h1>Information</h1>
             <div id="inside-grid-container-driver-information" class="inside-grid-container">
-                <div id="driver-information-data-labels-values-image">
-                    <div id="driver-information-data-labels" class="driver-information-data-labels-values">
-                        <span class="info-label">Name:</span>
-                        <span class="info-label">Surname:</span>
-                        <span class="info-label">Phone number:</span>
-                        <span class="info-label">Email:</span>
-                        <span class="info-label">Driver license:</span>
-                        <span class="info-label">Medical examination:</span>
-                        <span class="info-label">Assigned vehicle:</span>
-                        <span class="info-label">State:</span>
-                    </div>
-                    <div id="driver-information-data-values" class="driver-information-data-labels-values">
-                        <span id="driver-name" class="value">Jan</span>
-                        <span id="driver-surname" class="value">Kowalski</span>
-                        <span id="driver-phone" class="value">+48 123 456 789</span>
-                        <span id="driver-email" class="value">j.kowalski@example.com</span>
-                        <div id="driver-license" class="value">
-                            <span>valid</span>
-                            <span class="validity-date">(until 15.12.2026)</span>
-                        </div>
-                        <div id="medical-examination" class="value">
-                            <span>valid</span>
-                            <span class="validity-date">(until 30.09.2024)</span>
-                        </div>
-                        <span id="assigned-vehicle" class="value">Skoda Fabia (KR 4FM11)</span>
-                        <div id="driver-current-state" class="value">
-                            <div class="status-dot available"></div>
-                            <span>Available</span>
-                        </div>
-                    </div>
-                    <div id="driver-image" class="inside-grid-container">
-                        <img id="driver-picture" src="public/images/avatar.jpg">
-                    </div>
+                <div id="no-driver-selected" class="no-driver-selected">
+                    <span>Choose driver</span>
                 </div>
-                
-                <div class="report-container" class="inside-grid-container">
-                    <span><b>Recently reported issues</b></span>
-                    <div class="report">1. example report</div>
-                    <div class="report">2. example report</div>
-                    <div class="report">3. example report</div>
-                    <div class="report">4. example report</div>
-                </div>
-                <div id="information-buttons">
-                    <button id="driver-history-button" class="information-button"><img class="download-icon" src="public/images/download_icon_white.png">Driver history</button>
-                    <button id="trips-history-button" class="information-button"><img class="download-icon" src="public/images/download_icon_white.png">Incident report</button>
+                <div id="driver-details-container" style="display: none;">
+                    <!-- Dynamic driver data loaded via JS -->
                 </div>
             </div>
+
         </div>
     </main>
+    <div id="add-driver-popup" class="grid-container">
+    <h1>Add New Driver</h1>
+        <form id="add-driver-form" action="addDriver" method="POST" ENCTYPE="multipart/form-data">
+        <?php 
+                        if (isset($messages)) {
+                            foreach ($messages as $message) {
+                                echo $message;
+                            }
+                        }
+
+
+                        if (isset($_SESSION['error_message'])) {
+                            echo $_SESSION['error_message'];
+                            unset($_SESSION['error_message']);
+                        }
+                        ?>
+            <input name="name" type="text" placeholder="Enter name">
+            <input name="surname" type="text" placeholder="Enter surname">
+            <input name="phone" type="number" placeholder="Enter phone number">
+            <input name="email" type="text" placeholder="Enter email">
+            <Label>Driver license expires: <input name="license_expiry" type="date"></label>
+            <Label>Medical examination expires: <input name="medical_exam_expiry" type="date"></label>
+            <label>Driver photo: <input name="file" type="file"></label>
+            <div id="buttons">
+            <button id="inside-form-add-driver" type="submit">Add Driver</button>
+            <button id="inside-form-cancel" type="button">Cancel</button>
+            </div>
+        </form>
+        
+    </div>
 </body>
 </html>

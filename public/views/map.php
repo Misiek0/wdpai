@@ -70,19 +70,11 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
             <div id="leaflet-map"></div>
         </div>
         <?php
-        // Przekazanie danych PHP → JS
-        $vehicles = array_map(fn($vehicle) => [
-            'id'                    => $vehicle->getId(),
-            'current_latitude'      => $vehicle->getCurrentLatitude(),
-            'current_longitude'     => $vehicle->getCurrentLongitude(),
-            'reg_number'            => $vehicle->getRegNr(),
-            'brand'                 => $vehicle->getBrand(),
-            'model'                 => $vehicle->getModel()
-        ], $vehicles);
+        
         $icons = ['car_pointer_black.png','car_pointer_blue.png','car_pointer_bronze.png','car_pointer_red.png','car_pointer_green.png'];
         ?>
         <script>
-            window.mapVehicles = <?= json_encode($vehicles, JSON_NUMERIC_CHECK) ?>;
+            window.mapVehicles = <?= json_encode($vehicles, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
             window.mapIcons    = <?= json_encode($icons) ?>;
         </script>
         <script src="/public/scripts/mainMap.js" defer></script>

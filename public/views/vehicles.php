@@ -97,10 +97,10 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     </div>
                   
                     <div class="vehicles-data-values"> 
-                      <div class="value" id="vehicles-total-number"><?= $stats['total_vehicles'] ?? 0 ?></div>
-                      <div class="value" id="vehicles-available"><?= $stats['available'] ?? 0 ?></div>
-                      <div class="value" id="vehicles-on-the-road"><?= $stats['on_the_road'] ?? 0 ?></div>
-                      <div class="value" id="vehicles-in-service"><?= $stats['in_service'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-total-number"><?= $vehiclesStats['total_vehicles'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-available"><?= $vehiclesStats['available'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-on-the-road"><?= $vehiclesStats['on_the_road'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-in-service"><?= $vehiclesStats['in_service'] ?? 0 ?></div>
                     </div>
                 </div>
             </div>

@@ -12,11 +12,6 @@ class DefaultController extends AppController{
         $this->render('login');
     }
 
-    public function drivers(){
-        $this->authorize();
-        $this->render('drivers');
-    }
-
     public function reports(){
         $this->authorize();
         $this->render('reports');

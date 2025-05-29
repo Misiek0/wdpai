@@ -121,9 +121,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatDate = ds => new Date(ds).toLocaleDateString('en-GB');
     const validInspection = new Date(v.vehicle_inspection_expiry) > new Date();
     const validOcAc = new Date(v.oc_ac_expiry) > new Date();
+    const assigned = v.assigned_driver;
+    const assignedHtml = assigned
+      ? `<span class="value">${assigned.name} ${assigned.surname}</span>`
+      : `<span class="value">Unassigned</span>`;
+    const mapPopup = `
+      <b>${v.brand} ${v.model}</b><br>
+      ${v.reg_number}<br>
+      Vehicle ID: ${v.id}
+      ${assigned ? `<br>Assigned driver: ${assigned.name} ${assigned.surname}` : ''}
+    `;
 
     vehicleDetailsContainer.innerHTML = `
       <div id="vehicle-information-data-labels-values-image">
+
+      <div id="label-value-container">
         <div id="vehicle-information-data-labels" class="vehicle-information-data-labels-values">
           <span class="info-label">Brand:</span>
           <span class="info-label">Model:</span>
@@ -176,10 +188,12 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <span class="value">
             ${v.current_latitude && v.current_longitude
-              ? `Lat: ${v.current_latitude}, Long: ${v.current_longitude}`
+              ? `${v.current_latitude},${v.current_longitude}`
               : 'Unknown'}
           </span>
-          <span class="value">Not assigned</span>
+           ${assignedHtml}
+        </div>
+
         </div>
         <div id="vehicle-image" class="inside-grid-container">
           <img id="car-picture" src="public/uploads/${v.photo}" alt="${v.brand} ${v.model}">
@@ -222,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       L.marker([v.current_latitude, v.current_longitude], { icon: carIcon })
         .addTo(window.vehicleMap)
-        .bindPopup(`<b>${v.brand} ${v.model}</b><br>${v.reg_number}<br>Vehicle ID: ${v.id}`)
+        .bindPopup(mapPopup)
         .openPopup();
     }
   }

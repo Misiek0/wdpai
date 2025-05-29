@@ -17,7 +17,8 @@ CREATE TABLE drivers (
     email VARCHAR(255),
     license_expiry DATE,
     medical_exam_expiry DATE,
-    status driver_status NOT NULL DEFAULT 'available'
+    driver_status driver_status NOT NULL DEFAULT 'available',
+    photo VARCHAR(255)
 );
 
 CREATE TYPE vehicle_status AS ENUM ('available', 'on_road', 'in_service'); 
@@ -40,7 +41,7 @@ CREATE TABLE vehicles(
     photo VARCHAR(255)
 );
 
-
+--table for location history in future project grow
 CREATE TABLE vehicle_location_history(
     id SERIAL PRIMARY KEY,
     vehicle_id INTEGER REFERENCES vehicles(id) ON DELETE CASCADE,
@@ -51,10 +52,11 @@ CREATE TABLE vehicle_location_history(
 );
 
 CREATE TABLE driver_vehicle_assignments (
-    driver_id INTEGER REFERENCES drivers(id),
-    vehicle_id INTEGER REFERENCES vehicles(id),
-    assignment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (driver_id, vehicle_id)
+  id              SERIAL PRIMARY KEY,
+  driver_id       INTEGER REFERENCES drivers(id)  ON DELETE CASCADE,
+  vehicle_id      INTEGER REFERENCES vehicles(id) ON DELETE CASCADE,
+  assignment_date TIMESTAMPTZ NOT NULL
+      DEFAULT timezone('Europe/Warsaw', now()),
 );
 
 CREATE TABLE notifications (

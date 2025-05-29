@@ -17,9 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
         popupAnchor:[0, -32]
       });
 
+      const assignedDriver = vehicle.assigned_driver
+    ? `<br>Assigned driver: ${vehicle.assigned_driver.name} ${vehicle.assigned_driver.surname}`
+    : '';
+
       L.marker([vehicle.current_latitude, vehicle.current_longitude], { icon: carIcon })
        .addTo(map)
-       .bindPopup(`<b>${vehicle.brand} ${vehicle.model}</b><br>${vehicle.reg_number}<br>Vehicle ID: ${vehicle.id}`)
+       .bindPopup(`<b>${vehicle.brand} ${vehicle.model}</b><br>${vehicle.reg_number}<br>Vehicle ID: ${vehicle.id}${assignedDriver}`)
   
       // right list position
       const li = document.createElement('li');

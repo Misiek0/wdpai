@@ -14,7 +14,25 @@ class MapController extends AppController {
     public function map(){
         $this->authorize();
 
-        $vehicles = $this->vehicleRepository->getAllVehicles();
+        $vehiclesRaw = $this->vehicleRepository->getAllVehicles();
+        $vehicles = [];
+
+        foreach ($vehiclesRaw as $vehicle) {
+            $assignedDriver = $this->vehicleRepository->getAssignedDriverForVehicle($vehicle->getId());
+
+            $vehicles[] = [
+                'id' => $vehicle->getId(),
+                'current_latitude' => $vehicle->getCurrentLatitude(),
+                'current_longitude' => $vehicle->getCurrentLongitude(),
+                'reg_number' => $vehicle->getRegNr(),
+                'brand' => $vehicle->getBrand(),
+                'model' => $vehicle->getModel(),
+                'assigned_driver' => $assignedDriver ? [
+                    'name' => $assignedDriver->getName(),
+                    'surname' => $assignedDriver->getSurname()
+                ] : null
+            ];
+        }
 
         $this->render('map',[
             'vehicles'=>$vehicles

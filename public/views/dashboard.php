@@ -96,10 +96,10 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     </div>
                   
                     <div class="vehicles-data-values"> 
-                      <div class="value" id="vehicles-total-number"><?= $stats['total_vehicles'] ?? 0 ?></div>
-                      <div class="value" id="vehicles-available"><?= $stats['available'] ?? 0 ?></div>
-                      <div class="value" id="vehicles-on-the-road"><?= $stats['on_the_road'] ?? 0 ?></div>
-                      <div class="value" id="vehicles-in-service"><?= $stats['in_service'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-total-number"><?= $vehiclesStats['total_vehicles'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-available"><?= $vehiclesStats['available'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-on-the-road"><?= $vehiclesStats['on_the_road'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-in-service"><?= $vehiclesStats['in_service'] ?? 0 ?></div>
                     </div>
                 </div>
             </div>
@@ -125,10 +125,10 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     </div>
                   
                     <div class="vehicles-data-values"> 
-                      <div class="value" id="vehicles-total-number">1</div>
-                      <div class="value" id="vehicles-available">1</div>
-                      <div class="value" id="vehicles-on-the-road">1</div>
-                      <div class="value" id="vehicles-on-leave">1</div>
+                      <div class="value" id="vehicles-total-number"><?= $driversStats['total_drivers'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-available"><?= $driversStats['available'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-on-the-road"><?= $driversStats['on_the_road'] ?? 0 ?></div>
+                      <div class="value" id="vehicles-on-leave"><?= $driversStats['on_leave'] ?? 0 ?></div>
                     </div>
                 </div>
             </div>
@@ -162,8 +162,8 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     </div>
                 </div>
                 <div class="fuel-consumption-data-values"> 
-                    <div class="value" id="total-fuel-consumption"><?= $stats['total_fuel'] ?? 0 ?> l/km</div>
-                    <div class="value" id="average-fuel-consumption"><?= $stats['avg_fuel'] ?? 0 ?> l/km</div>
+                    <div class="value" id="total-fuel-consumption"><?= $vehiclesStats['total_fuel'] ?? 0 ?> l/km</div>
+                    <div class="value" id="average-fuel-consumption"><?= $vehiclesStats['avg_fuel'] ?? 0 ?> l/km</div>
                 </div>
                 </div>
             </div>
@@ -179,8 +179,8 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                             </div>
                         </div>
                         <div class="fuel-consumption-data-values"> 
-                            <div class="value" id="total-fleet-mileage"><?= $stats['total_mileage'] ?? 0 ?> km</div>
-                            <div class="value" id="average-fleet-mileage"><?= $stats['avg_mileage'] ?? 0 ?> km</div>
+                            <div class="value" id="total-fleet-mileage"><?= $vehiclesStats['total_mileage'] ?? 0 ?> km</div>
+                            <div class="value" id="average-fleet-mileage"><?= $vehiclesStats['avg_mileage'] ?? 0 ?> km</div>
                         </div>
                     </div>
                 </div>

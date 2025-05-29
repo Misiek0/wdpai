@@ -16,9 +16,9 @@ class Vehicle{
     private $id;
 
 
-    public function __construct(string $brand,string $model,string $reg_number,int $mileage,string $vehicle_inspection_expiry,string $oc_ac_expiry,string $vin,string $photo = null, int $id = null, string $status = 'available' , ?float $avg_fuel_consumption = null,  ?float $current_latitude = null, ?float $current_longitude = null) {
-        $this->brand = $brand;
-        $this->model = $model;
+    public function __construct(string $brand,string $model,string $reg_number,int $mileage,string $vehicle_inspection_expiry,string $oc_ac_expiry,string $vin,?string $photo = null, int $id = null, string $status = 'available' , ?float $avg_fuel_consumption = null,  ?float $current_latitude = null, ?float $current_longitude = null) {
+        $this->setBrand($brand);
+        $this->setModel($model);
         $this->reg_number = $reg_number;
         $this->mileage = $mileage;
         $this->vehicle_inspection_expiry = $vehicle_inspection_expiry;
@@ -56,7 +56,10 @@ public function getModel(): string
 
 public function setModel(string $model)
 {
-    $this->model = $model;
+    if (empty($model)) {
+        throw new InvalidArgumentException("Model cannot be empty");
+    }
+    $this->model = ucfirst(strtolower(trim($model)));
 }
 
 public function getRegNr(): string

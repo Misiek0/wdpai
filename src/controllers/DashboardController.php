@@ -2,24 +2,29 @@
 
 require_once 'AppController.php';
 require_once __DIR__.'/../repository/VehicleRepository.php';
+require_once __DIR__.'/../repository/DriverRepository.php';
 
 class DashboardController extends AppController {
     private $vehicleRepository;
+    private $driverRepository;
 
     public function __construct() {
         parent::__construct();
         $this->vehicleRepository = new VehicleRepository();
+        $this->driverRepository = new DriverRepository();
     }
 
     public function dashboard()
     {
         $this->authorize();
 
-        $stats = $this->vehicleRepository->getVehiclesStats();
+        $vehiclesStats = $this->vehicleRepository->getVehiclesStats();
+        $driversStats = $this->driverRepository->getDriversStats();
         $vehicles = $this->vehicleRepository->getAllVehicles();
 
         $this->render('dashboard',[
-            'stats'=> $stats,
+            'vehiclesStats'=> $vehiclesStats,
+            'driversStats'=> $driversStats,
             'vehicles'=>$vehicles
         ]);
     }
