@@ -13,6 +13,7 @@ body{
     margin: 0;
     padding: 0;
     font-size: 1rem;
+    overflow-x: hidden;
 }
 .site-header { 
     position: fixed;
@@ -475,12 +476,28 @@ input[type="date"]{
     height: 100%;
     color: #1E3A8A;
 }
-
-.error {
-    color: #ff0000;
-    text-align: center;
-    padding: 20px;
+.form-error {
+  color: red;
+  font-size:0.6em;
 }
+.tooltip-modal {
+    max-width: 90vw;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  display: none;
+  position:fixed;
+  background-color: white;
+  border: 2px solid #1E3A8A;
+  border-radius: 8px;
+  padding: 0.5em 1em;
+  font-size: 0.9em;
+  font-family: 'JejuGothic', sans-serif;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  white-space: nowrap;
+  z-index: 9999;
+  pointer-events: none; /* prevents it from blocking interaction */
+}
+
 
 @media (max-width: 1366px){
     .portal-name{
@@ -631,6 +648,9 @@ input[type="date"]{
     }
     form button{
         height:2em;
+    }
+    .tooltip-modal {
+        font-size:0.7em;
     }
 
 }

@@ -31,7 +31,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     <li class="menu-item"><a href="/vehicles">Vehicles</a></li>
                     <li class="menu-item"><a href="/drivers">Drivers</a></li>
                     <li class="menu-item"><a href="/map">Map</a></li>
-                    <li class="menu-item"><a href="/reports">Reports</a></li>
+                    <li class="menu-item">Reports*</li>
                 </ul>
             </div>
             <div class="profile-section">

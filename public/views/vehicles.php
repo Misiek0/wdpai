@@ -19,6 +19,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
 
     <script src="public/scripts/dynamicMenu.js" defer></script>
     <script src="public/scripts/vehicles.js" defer></script>
+    <script src="public/scripts/premiumTooltip.js" defer></script>
 </head>
 <body id="vehicles-page">
     <header class = "site-header">
@@ -36,7 +37,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     <li class="menu-item-active"><a href="/vehicles">Vehicles</a></li>
                     <li class="menu-item"><a href="/drivers">Drivers</a></li>
                     <li class="menu-item"><a href="/map">Map</a></li>
-                    <li class="menu-item"><a href="/reports">Reports</a></li>
+                    <li class="menu-item menu-reports">Reports*</li>
                 </ul>
 
             </div>
@@ -66,7 +67,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
             <li class="mobile-menu-item-active"><a href="/vehicles">Vehicles</a></li>
             <li class="mobile-menu-item"><a href="/drivers">Drivers</a></li>
             <li class="mobile-menu-item"><a href="/map">Map</a></li>
-            <li class="mobile-menu-item"><a href="/reports">Reports</a></li>
+            <li class="mobile-menu-item menu-reports" tabindex="0">Reports*</li>
         </ul>
     </div>
     <main>
@@ -154,6 +155,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     <div id="add-vehicle-popup" class="grid-container">
     <h1>Add New Vehicle</h1>
         <form id="add-vehicle-form" action="addVehicle" method="POST" ENCTYPE="multipart/form-data">
+        <div id="form-errors"></div>
         <?php 
                         if (isset($messages)) {
                             foreach ($messages as $message) {
@@ -182,5 +184,6 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
         </form>
         
     </div>
+<div id="premium-tooltip" class="tooltip-modal">Available in premium version</div>
 </body>
 </html>

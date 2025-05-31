@@ -14,6 +14,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Jeju+Gothic&display=swap" rel="stylesheet">
     <script src="public/scripts/dynamicMenu.js" defer></script>
+    <script src="public/scripts/premiumTooltip.js" defer></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
@@ -34,7 +35,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     <li class="menu-item"><a href="/vehicles">Vehicles</a></li>
                     <li class="menu-item"><a href="/drivers">Drivers</a></li>
                     <li class="menu-item"><a href="/map">Map</a></li>
-                    <li class="menu-item"><a href="/reports">Reports</a></li>
+                    <li class="menu-item menu-reports">Reports*</li>
                 </ul>
 
             </div>
@@ -66,7 +67,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
             <li class="mobile-menu-item"><a href="/vehicles">Vehicles</a></li>
             <li class="mobile-menu-item"><a href="/drivers">Drivers</a></li>
             <li class="mobile-menu-item"><a href="/map">Map</a></li>
-            <li class="mobile-menu-item"><a href="/reports">Reports</a></li>
+            <li class="mobile-menu-item menu-reports" tabindex="0">Reports*</li>
         </ul>
     </div>
     <main>
@@ -184,7 +185,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                         </div>
                     </div>
                 </div>
-                <button onclick="window.location.href='/reports'">View details</button>
+                <button>View details*</button>
             </div>
         </div>
 
@@ -222,6 +223,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
         </div>
 
     </main>
+<div id="premium-tooltip" class="tooltip-modal">Available in premium version</div>
 </body>
 
 

@@ -13,7 +13,7 @@ body{
     margin: 0;
     padding: 0;
     height: 100vh;
-    
+    overflow-x: hidden;
     font-size: 1rem;
     
 }
@@ -350,6 +350,24 @@ p{
     width: 24px;
     height: 24px;
   }
+.tooltip-modal {
+    max-width: 90vw;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  display: none;
+  position:fixed;
+  background-color: white;
+  border: 2px solid #1E3A8A;
+  border-radius: 8px;
+  padding: 0.5em 1em;
+  font-size: 0.9em;
+  font-family: 'JejuGothic', sans-serif;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  white-space: nowrap;
+  z-index: 9999;
+  pointer-events: none; /* prevents it from blocking interaction */
+}
+
 @media (max-width: 1366px){
     .portal-name{
         display: none;
@@ -467,6 +485,9 @@ p{
       .cars{
         display: none;
       }
+      .tooltip-modal {
+        font-size:0.7em;
+    }
 
 }
     

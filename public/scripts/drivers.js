@@ -1,10 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
   const addButton = document.getElementById('add-button');
   const cancelButton = document.getElementById('inside-form-cancel');
+  const removeButton = document.getElementById('remove-button');
+
+  const form = document.getElementById('add-driver-form');
+  const messagesDiv = document.getElementById('form-errors');
+  form.querySelector('h1')?.after(messagesDiv); // Umieść pod <h1>
+
   const tableRows = Array.from(document.querySelectorAll('#drivers-table tbody tr'));
   const noDriverSelected = document.getElementById('no-driver-selected');
   const driverDetailsContainer = document.getElementById('driver-details-container');
-  const removeButton = document.getElementById('remove-button');
+
 
   // show / hide popup "Add driver"
   addButton.addEventListener('click', () => {
@@ -12,6 +18,32 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   cancelButton.addEventListener('click', () => {
     document.getElementById('add-driver-popup').style.display = 'none';
+  });
+
+    form.addEventListener('submit', (e) => {
+    messagesDiv.innerHTML = ''; // Resetuj
+
+    const name = form.name.value.trim();
+    const surname = form.surname.value.trim();
+    const phone = form.phone.value.trim();
+    const email = form.email.value.trim();
+    const license = form.license_expiry.value;
+    const medical = form.medical_exam_expiry.value;
+    const file = form.file.files[0];
+
+    const isValid =
+      name &&
+      surname &&
+      phone &&
+      email &&
+      license &&
+      medical &&
+      file;
+
+      if (!isValid) {
+        e.preventDefault();
+        messagesDiv.innerHTML = `<p class="form-error">All the input must be filled with correct data.</p>`;
+      }
   });
   
   // table click

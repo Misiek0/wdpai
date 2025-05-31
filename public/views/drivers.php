@@ -15,6 +15,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     <link href="https://fonts.googleapis.com/css2?family=Jeju+Gothic&display=swap" rel="stylesheet">
     <script src="public/scripts/dynamicMenu.js" defer></script>
     <script src="public/scripts/drivers.js" defer></script>
+    <script src="public/scripts/premiumTooltip.js" defer></script>
 </head>
 <body id="drivers-page">
     <header class="site-header">
@@ -32,7 +33,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
                     <li class="menu-item"><a href="/vehicles">Vehicles</a></li>
                     <li class="menu-item-active"><a href="/drivers">Drivers</a></li>
                     <li class="menu-item"><a href="/map">Map</a></li>
-                    <li class="menu-item"><a href="/reports">Reports</a></li>
+                    <li class="menu-item menu-reports">Reports*</li>
                 </ul>
             </div>
             <div class="profile-section">
@@ -61,7 +62,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
             <li class="mobile-menu-item"><a href="/vehicles">Vehicles</a></li>
             <li class="mobile-menu-item-active"><a href="/drivers">Drivers</a></li>
             <li class="mobile-menu-item"><a href="/map">Map</a></li>
-            <li class="mobile-menu-item"><a href="/reports">Reports</a></li>
+            <li class="mobile-menu-item menu-reports" tabindex="0">Reports*</li>
         </ul>
     </div>
     <main>
@@ -148,6 +149,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     <div id="add-driver-popup" class="grid-container">
     <h1>Add New Driver</h1>
         <form id="add-driver-form" action="addDriver" method="POST" ENCTYPE="multipart/form-data">
+        <div id="form-errors"></div>
         <?php 
                         if (isset($messages)) {
                             foreach ($messages as $message) {
@@ -175,5 +177,6 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
         </form>
         
     </div>
+<div id="premium-tooltip" class="tooltip-modal">Available in premium version</div>
 </body>
 </html>

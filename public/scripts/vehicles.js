@@ -1,10 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
   const addButton = document.getElementById('add-button');
   const cancelButton = document.getElementById('inside-form-cancel');
+  const removeButton = document.getElementById('remove-button');
+
+  const form = document.getElementById('add-vehicle-form');
+  const messagesDiv = document.getElementById('form-errors');
+  form.querySelector('h1')?.after(messagesDiv); // Umieść pod <h1>
+
   const tableRows = Array.from(document.querySelectorAll('#vehicles-table tbody tr'));
   const noVehicleSelected = document.getElementById('no-vehicle-selected');
   const vehicleDetailsContainer = document.getElementById('vehicle-details-container');
-  const removeButton = document.getElementById('remove-button');
+
 
   // show / hide popup "Add vehicle"
   addButton.addEventListener('click', () => {
@@ -12,6 +18,34 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   cancelButton.addEventListener('click', () => {
     document.getElementById('add-vehicle-popup').style.display = 'none';
+  });
+
+  form.addEventListener('submit', (e) => {
+    messagesDiv.innerHTML = ''; // Resetuj
+
+    const brand = form.brand.value.trim();
+    const model = form.model.value.trim();
+    const reg_number = form.reg_number.value.trim();
+    const mileage = form.mileage.value;
+    const inspection = form.vehicle_inspection_expiry.value;
+    const ocac = form.oc_ac_expiry.value;
+    const vin = form.vin.value.trim();
+    const file = form.file.files[0];
+
+    const isValid =
+      brand &&
+      model &&
+      reg_number &&
+      vin && vin.length === 17 &&
+      mileage && mileage > 0 &&
+      inspection &&
+      ocac &&
+      file;
+
+      if (!isValid) {
+      e.preventDefault();
+      messagesDiv.innerHTML = `<p class="form-error">All the input must be filled with correct data.</p>`;
+    }
   });
 
   // table click
