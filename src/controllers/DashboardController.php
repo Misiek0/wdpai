@@ -5,8 +5,8 @@ require_once __DIR__.'/../repository/VehicleRepository.php';
 require_once __DIR__.'/../repository/DriverRepository.php';
 
 class DashboardController extends AppController {
-    private $vehicleRepository;
-    private $driverRepository;
+    private VehicleRepository $vehicleRepository;
+    private DriverRepository $driverRepository;
 
     public function __construct() {
         parent::__construct();

@@ -6,6 +6,8 @@ require_once __DIR__.'/../repository/DriverRepository.php';
 require_once __DIR__.'/../repository/VehicleRepository.php';
 require_once __DIR__.'/../service/StatusGenerator.php';
 require_once __DIR__.'/../service/Validator.php';
+require_once __DIR__.'/../repository/NotificationRepository.php';
+require_once __DIR__.'/../models/Notification.php';
 
 
 
@@ -14,10 +16,11 @@ class DriverController extends AppController{
     const UPLOAD_DIRECTORY = '/../public/uploads/';
 
     private $messages = [];
-    private $driverRepository;
-    private $vehicleRepository;
-    private $statusGenerator;
-    private $validator;
+    private DriverRepository $driverRepository;
+    private VehicleRepository $vehicleRepository;
+    private StatusGenerator $statusGenerator;
+    private Validator $validator;
+    private NotificationRepository $notificationRepository;
 
     public function __construct()
     {
@@ -26,6 +29,7 @@ class DriverController extends AppController{
         $this->vehicleRepository = new VehicleRepository();
         $this->statusGenerator = new StatusGenerator();
         $this->validator = new Validator();
+        $this->notificationRepository = new NotificationRepository();
         
     }
 
@@ -93,6 +97,12 @@ class DriverController extends AppController{
             };
         $this->messages[] = "Driver added successfully!";
         
+        $this->notificationRepository->createNotification(
+            $_SESSION['user']['id'],
+            new Notification("Driver id #{$newDriverId} successfully added")
+        );
+
+
         header('Location: /drivers');
         exit;
         };
@@ -168,6 +178,10 @@ class DriverController extends AppController{
     
             $deleted = $this->driverRepository->deleteDriverById((int)$driverId);
             if ($deleted) {
+                $this->notificationRepository->createNotification(
+                    $_SESSION['user']['id'],
+                    new Notification("Driver id #{$driverId} was deleted")
+                );
                 echo json_encode(['success' => true]);
             } else {
                 http_response_code(404);

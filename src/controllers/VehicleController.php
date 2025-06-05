@@ -7,6 +7,8 @@ require_once __DIR__.'/../service/FuelGenerator.php';
 require_once __DIR__.'/../service/LocationGenerator.php';
 require_once __DIR__.'/../service/StatusGenerator.php';
 require_once __DIR__.'/../service/Validator.php';
+require_once __DIR__.'/../repository/NotificationRepository.php';
+require_once __DIR__.'/../models/Notification.php';
 
 
 class VehicleController extends AppController{
@@ -14,12 +16,13 @@ class VehicleController extends AppController{
     const UPLOAD_DIRECTORY = '/../public/uploads/';
     
     private $messages = [];
-    private $vehicleRepository;
-    private $driverRepository;
-    private $fuelGenerator;
-    private $locationGenerator;
-    private $statusGenerator;
-    private $validator;
+    private VehicleRepository $vehicleRepository;
+    private DriverRepository $driverRepository;
+    private FuelGenerator $fuelGenerator;
+    private LocationGenerator $locationGenerator;
+    private StatusGenerator $statusGenerator;
+    private Validator $validator;
+    private NotificationRepository $notificationRepository;
 
     public function __construct()
     {
@@ -30,7 +33,7 @@ class VehicleController extends AppController{
         $this->locationGenerator = new LocationGenerator();
         $this->statusGenerator = new StatusGenerator();
         $this->validator = new Validator();
-        
+        $this->notificationRepository = new NotificationRepository();
     }
 
     public function vehicles(){
@@ -116,6 +119,12 @@ class VehicleController extends AppController{
             };
             $this->messages[] = "Vehicle added successfully!";
 
+            $this->notificationRepository->createNotification(
+                $_SESSION['user']['id'],
+                new Notification("Vehicle id #{$newVehicleId} successfully added")
+            );
+
+
             header('Location: /vehicles');
             exit;
 
@@ -123,7 +132,7 @@ class VehicleController extends AppController{
     }
 
     public function api_vehicles() {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        if ($this->isGet()) {
             $this->getVehicleData();
         } 
     }
@@ -193,6 +202,10 @@ class VehicleController extends AppController{
 
             $deleted = $this->vehicleRepository->deleteVehicleById((int)$vehicleId);
             if ($deleted) {
+                $this->notificationRepository->createNotification(
+                    $_SESSION['user']['id'],
+                    new Notification("Vehicle id #{$vehicleId} was deleted")
+                );
                 echo json_encode(['success' => true]);
             } else {
                 http_response_code(404);

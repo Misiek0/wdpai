@@ -7,7 +7,6 @@ $path = trim($_SERVER['REQUEST_URI'], '/');
 $path = parse_url($path, PHP_URL_PATH);
 
 Routing::get('index', 'DefaultController');
-Routing::get('reports','DefaultController');
 Routing::get('','DefaultController');
 
 Routing::get('login', 'SecurityController');
@@ -35,6 +34,11 @@ Routing::post('updateDriverStatus','DriverController');
 
 Routing::get('map','MapController');
 
+Routing::get('api/notifications','NotificationController');
+Routing::post('markAsRead','NotificationController');
+
+Routing::get('checkExpiringVehicleDocs','NotificationController');
+Routing::get('checkExpiringDriverDocs','NotificationController');
 
 
 

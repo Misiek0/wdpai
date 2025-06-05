@@ -4,7 +4,7 @@ require_once 'AppController.php';
 require_once __DIR__.'/../repository/VehicleRepository.php';
 
 class MapController extends AppController {
-    private $vehicleRepository;
+    private VehicleRepository $vehicleRepository;
 
     public function __construct() {
         parent::__construct();

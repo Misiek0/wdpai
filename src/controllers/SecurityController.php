@@ -3,15 +3,18 @@
 require_once 'AppController.php';
 require_once __DIR__.'/../models/User.php';
 require_once __DIR__.'/../repository/UserRepository.php';
+require_once 'NotificationController.php';
 
 class SecurityController extends AppController{
 
-    private $userRepository;
+    private UserRepository $userRepository;
+    private NotificationController $notificationController;
 
     public function __construct()
     {
         parent::__construct();
         $this->userRepository = new UserRepository();
+        $this->notificationController = new NotificationController();
         
     }
 
@@ -71,6 +74,10 @@ class SecurityController extends AppController{
                 'name' => $user->getName(),
                 'surname' => $user->getSurname()
             ];
+            $this->notificationController->checkExpiringDriverDocs(true);
+            $this->notificationController->checkExpiringVehicleDocs(true);
+
+
             header("Location: /dashboard");
             exit(); 
 

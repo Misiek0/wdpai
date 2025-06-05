@@ -44,6 +44,9 @@ services:
       - "5050:80"
     networks:
       - pg-network
+    volumes:
+      - /home/michal/Pulpit/wdpai/pgadmin_storage:/var/lib/pgadmin/storage
+
   
 networks:
   pg-network:

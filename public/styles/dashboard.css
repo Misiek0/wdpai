@@ -271,15 +271,35 @@ p{
     gap: 0.5em;
     flex-direction: column;
     align-items: center;
+    height: 20vh;
 
 }
-#notifications> .inside-grid-container{
+
+#notification-list{
     display: flex;
-    gap: 1em;
+    flex-direction: column;
+    align-items: stretch; /* lub flex-start */
+    gap: 0.3em;
+    width: 95%;
+    overflow-y: auto;
+    max-height: 100%;
+    padding-right: 0.5em;
+}
+#notification-list::-webkit-scrollbar {
+    width: 0px; 
+  }
+.notification-item{
+    display: flex;
+    gap: 0.4em;
     align-items: center;
+    width: 100%;
+    word-break: break-word;   /* zawijanie */
+    white-space: normal;      /* domyślne zawijanie */
+    font-size: 0.9em;
 }
 .seen,
 .unseen{
+    height:30px;
     width: 30px;
 }
 #map{
@@ -475,9 +495,7 @@ p{
         align-items: center;
       }
     
-      .inside-grid-container {
-        width: 90%;
-      }
+
     
       #statistics button {
         height: 2em;

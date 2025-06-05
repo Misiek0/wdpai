@@ -15,6 +15,7 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
     <link href="https://fonts.googleapis.com/css?family=Jeju+Gothic&display=swap" rel="stylesheet">
     <script src="public/scripts/dynamicMenu.js" defer></script>
     <script src="public/scripts/premiumTooltip.js" defer></script>
+    <script src="public/scripts/notifications.js" defer></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
@@ -138,14 +139,21 @@ $firstNameLetter = $name ? strtoupper(substr($name, 0, 1)) : null;
 
         <div id="notifications" class="grid-container">
             <h1>Notifications</h1>
-            <div  class="inside-grid-container">
+                    <div id="notification-list"></div>
+
+
+
+
+
+
+            <!-- <div  class="inside-grid-container">
                 <img class="unseen" src="public/images/unread_mail.png">
                 <div class="message">03.03.2025 11:12:00 Upcoming service deadline for vehicle #7</div>
             </div>
             <div  class="inside-grid-container">
                 <img class="seen" src="public/images/read_mail.png">
                 <div class="message">01.03.2025 10:30:00 A fault registered for Vehicle #2</div>
-            </div>
+            </div> -->
         </div>
 
 

@@ -37,7 +37,8 @@ CREATE TABLE vehicles(
     status vehicle_status NOT NULL DEFAULT 'available',
     current_latitude DECIMAL(10, 8) CHECK (current_latitude BETWEEN -90 AND 90),
     current_longitude DECIMAL(11, 8) CHECK (current_longitude BETWEEN -180 AND 180),
-    last_location_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_location_update TIMESTAMPTZ NOT NULL
+        DEFAULT timezone('Europe/Warsaw', now()),
     photo VARCHAR(255)
 );
 
@@ -47,7 +48,8 @@ CREATE TABLE vehicle_location_history(
     vehicle_id INTEGER REFERENCES vehicles(id) ON DELETE CASCADE,
     latitude DECIMAL(10, 8) NOT NULL CHECK (latitude BETWEEN -90 AND 90),
     longitude DECIMAL(11, 8) NOT NULL CHECK (longitude BETWEEN -180 AND 180),
-    recorded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    recorded_at TIMESTAMPTZ NOT NULL
+        DEFAULT timezone('Europe/Warsaw', now())
 
 );
 
@@ -56,28 +58,16 @@ CREATE TABLE driver_vehicle_assignments (
   driver_id       INTEGER REFERENCES drivers(id)  ON DELETE CASCADE,
   vehicle_id      INTEGER REFERENCES vehicles(id) ON DELETE CASCADE,
   assignment_date TIMESTAMPTZ NOT NULL
-      DEFAULT timezone('Europe/Warsaw', now()),
+      DEFAULT timezone('Europe/Warsaw', now())
 );
 
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
+    user_id INTEGER REFERENCES users(id) NOT NULL,
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ NOT NULL
+        DEFAULT timezone('Europe/Warsaw', now())
 );
 
-CREATE TABLE vehicle_services (
-    id SERIAL PRIMARY KEY,
-    vehicle_id INTEGER NOT NULL REFERENCES vehicles(id) ON DELETE CASCADE,
-    service_date DATE NOT NULL CHECK (service_date <= CURRENT_DATE),
-    next_service_date DATE CHECK (next_service_date >= service_date), 
-    service_type VARCHAR(50) NOT NULL,
-    mileage INTEGER CHECK (mileage >= 0), 
-    cost DECIMAL(10,2) CHECK (cost >= 0),
-    description TEXT,
-    service_provider VARCHAR(100),
-    invoice_number VARCHAR(50), 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
