@@ -5,7 +5,7 @@
 -- Dumped from database version 17.4 (Debian 17.4-1.pgdg120+2)
 -- Dumped by pg_dump version 17.4
 
--- Started on 2025-06-05 19:42:12 UTC
+-- Started on 2025-06-14 18:12:59 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -24,7 +24,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 226 (class 1259 OID 16734)
+-- TOC entry 224 (class 1259 OID 16734)
 -- Name: driver_vehicle_assignments; Type: TABLE; Schema: public; Owner: docker
 --
 
@@ -39,7 +39,7 @@ CREATE TABLE public.driver_vehicle_assignments (
 ALTER TABLE public.driver_vehicle_assignments OWNER TO docker;
 
 --
--- TOC entry 225 (class 1259 OID 16733)
+-- TOC entry 223 (class 1259 OID 16733)
 -- Name: driver_vehicle_assignments_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
@@ -55,8 +55,8 @@ CREATE SEQUENCE public.driver_vehicle_assignments_id_seq
 ALTER SEQUENCE public.driver_vehicle_assignments_id_seq OWNER TO docker;
 
 --
--- TOC entry 3454 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 3451 (class 0 OID 0)
+-- Dependencies: 223
 -- Name: driver_vehicle_assignments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
@@ -101,7 +101,7 @@ CREATE SEQUENCE public.drivers_id_seq
 ALTER SEQUENCE public.drivers_id_seq OWNER TO docker;
 
 --
--- TOC entry 3455 (class 0 OID 0)
+-- TOC entry 3452 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: drivers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
@@ -110,7 +110,111 @@ ALTER SEQUENCE public.drivers_id_seq OWNED BY public.drivers.id;
 
 
 --
--- TOC entry 228 (class 1259 OID 16752)
+-- TOC entry 222 (class 1259 OID 16607)
+-- Name: vehicles; Type: TABLE; Schema: public; Owner: docker
+--
+
+CREATE TABLE public.vehicles (
+    id integer NOT NULL,
+    user_id integer,
+    brand character varying(50) NOT NULL,
+    model character varying(50) NOT NULL,
+    reg_number character varying(20) NOT NULL,
+    mileage integer,
+    vehicle_inspection_expiry date,
+    oc_ac_expiry date,
+    vin character varying(17),
+    avg_fuel_consumption double precision,
+    status public.vehicle_status DEFAULT 'available'::public.vehicle_status NOT NULL,
+    current_latitude numeric(10,8),
+    current_longitude numeric(11,8),
+    last_location_update timestamp with time zone DEFAULT timezone('Europe/Warsaw'::text, now()),
+    photo character varying(255),
+    CONSTRAINT vehicles_avg_fuel_consumption_check CHECK ((avg_fuel_consumption > (0)::double precision)),
+    CONSTRAINT vehicles_current_latitude_check CHECK (((current_latitude >= ('-90'::integer)::numeric) AND (current_latitude <= (90)::numeric))),
+    CONSTRAINT vehicles_current_longitude_check CHECK (((current_longitude >= ('-180'::integer)::numeric) AND (current_longitude <= (180)::numeric))),
+    CONSTRAINT vehicles_mileage_check CHECK ((mileage >= 0)),
+    CONSTRAINT vehicles_vin_check CHECK ((length((vin)::text) = 17))
+);
+
+
+ALTER TABLE public.vehicles OWNER TO docker;
+
+--
+-- TOC entry 230 (class 1259 OID 16790)
+-- Name: drivers_with_vehicles; Type: VIEW; Schema: public; Owner: docker
+--
+
+CREATE VIEW public.drivers_with_vehicles AS
+ SELECT d.id,
+    d.user_id,
+    d.name,
+    d.surname,
+    d.phone,
+    d.email,
+    d.license_expiry,
+    d.medical_exam_expiry,
+    d.driver_status,
+    d.photo,
+    v.id AS vehicle_id,
+    v.brand AS vehicle_brand,
+    v.model AS vehicle_model,
+    v.reg_number AS vehicle_reg_number,
+    v.status AS vehicle_status
+   FROM ((public.drivers d
+     LEFT JOIN ( SELECT DISTINCT ON (driver_vehicle_assignments.driver_id) driver_vehicle_assignments.driver_id,
+            driver_vehicle_assignments.vehicle_id,
+            driver_vehicle_assignments.assignment_date
+           FROM public.driver_vehicle_assignments
+          ORDER BY driver_vehicle_assignments.driver_id, driver_vehicle_assignments.assignment_date DESC) a ON ((a.driver_id = d.id)))
+     LEFT JOIN public.vehicles v ON ((v.id = a.vehicle_id)));
+
+
+ALTER VIEW public.drivers_with_vehicles OWNER TO docker;
+
+--
+-- TOC entry 231 (class 1259 OID 16795)
+-- Name: expiring_documents; Type: VIEW; Schema: public; Owner: docker
+--
+
+CREATE VIEW public.expiring_documents AS
+ SELECT 'driver_license'::text AS document_type,
+    d.id AS owner_id,
+    (((d.name)::text || ' '::text) || (d.surname)::text) AS owner_name,
+    d.license_expiry AS expiry_date,
+    (d.license_expiry - CURRENT_DATE) AS days_remaining
+   FROM public.drivers d
+  WHERE ((d.license_expiry >= CURRENT_DATE) AND (d.license_expiry <= (CURRENT_DATE + '30 days'::interval)))
+UNION ALL
+ SELECT 'driver_medical'::text AS document_type,
+    d.id AS owner_id,
+    (((d.name)::text || ' '::text) || (d.surname)::text) AS owner_name,
+    d.medical_exam_expiry AS expiry_date,
+    (d.medical_exam_expiry - CURRENT_DATE) AS days_remaining
+   FROM public.drivers d
+  WHERE ((d.medical_exam_expiry >= CURRENT_DATE) AND (d.medical_exam_expiry <= (CURRENT_DATE + '30 days'::interval)))
+UNION ALL
+ SELECT 'vehicle_inspection'::text AS document_type,
+    v.id AS owner_id,
+    ((((((v.brand)::text || ' '::text) || (v.model)::text) || ' ('::text) || (v.reg_number)::text) || ')'::text) AS owner_name,
+    v.vehicle_inspection_expiry AS expiry_date,
+    (v.vehicle_inspection_expiry - CURRENT_DATE) AS days_remaining
+   FROM public.vehicles v
+  WHERE ((v.vehicle_inspection_expiry >= CURRENT_DATE) AND (v.vehicle_inspection_expiry <= (CURRENT_DATE + '30 days'::interval)))
+UNION ALL
+ SELECT 'vehicle_insurance'::text AS document_type,
+    v.id AS owner_id,
+    ((((((v.brand)::text || ' '::text) || (v.model)::text) || ' ('::text) || (v.reg_number)::text) || ')'::text) AS owner_name,
+    v.oc_ac_expiry AS expiry_date,
+    (v.oc_ac_expiry - CURRENT_DATE) AS days_remaining
+   FROM public.vehicles v
+  WHERE ((v.oc_ac_expiry >= CURRENT_DATE) AND (v.oc_ac_expiry <= (CURRENT_DATE + '30 days'::interval)));
+
+
+ALTER VIEW public.expiring_documents OWNER TO docker;
+
+--
+-- TOC entry 226 (class 1259 OID 16752)
 -- Name: notifications; Type: TABLE; Schema: public; Owner: docker
 --
 
@@ -126,7 +230,7 @@ CREATE TABLE public.notifications (
 ALTER TABLE public.notifications OWNER TO docker;
 
 --
--- TOC entry 227 (class 1259 OID 16751)
+-- TOC entry 225 (class 1259 OID 16751)
 -- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
@@ -142,8 +246,8 @@ CREATE SEQUENCE public.notifications_id_seq
 ALTER SEQUENCE public.notifications_id_seq OWNER TO docker;
 
 --
--- TOC entry 3456 (class 0 OID 0)
--- Dependencies: 227
+-- TOC entry 3453 (class 0 OID 0)
+-- Dependencies: 225
 -- Name: notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
@@ -183,7 +287,7 @@ CREATE SEQUENCE public.users_id_seq
 ALTER SEQUENCE public.users_id_seq OWNER TO docker;
 
 --
--- TOC entry 3457 (class 0 OID 0)
+-- TOC entry 3454 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
@@ -192,7 +296,7 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- TOC entry 230 (class 1259 OID 16769)
+-- TOC entry 228 (class 1259 OID 16769)
 -- Name: vehicle_location_history; Type: TABLE; Schema: public; Owner: docker
 --
 
@@ -210,7 +314,7 @@ CREATE TABLE public.vehicle_location_history (
 ALTER TABLE public.vehicle_location_history OWNER TO docker;
 
 --
--- TOC entry 229 (class 1259 OID 16768)
+-- TOC entry 227 (class 1259 OID 16768)
 -- Name: vehicle_location_history_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
@@ -226,95 +330,13 @@ CREATE SEQUENCE public.vehicle_location_history_id_seq
 ALTER SEQUENCE public.vehicle_location_history_id_seq OWNER TO docker;
 
 --
--- TOC entry 3458 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 3455 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: vehicle_location_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE public.vehicle_location_history_id_seq OWNED BY public.vehicle_location_history.id;
 
-
---
--- TOC entry 224 (class 1259 OID 16677)
--- Name: vehicle_services; Type: TABLE; Schema: public; Owner: docker
---
-
-CREATE TABLE public.vehicle_services (
-    id integer NOT NULL,
-    vehicle_id integer NOT NULL,
-    service_date date NOT NULL,
-    next_service_date date,
-    service_type character varying(50) NOT NULL,
-    mileage integer,
-    cost numeric(10,2),
-    description text,
-    service_provider character varying(100),
-    invoice_number character varying(50),
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT vehicle_services_check CHECK ((next_service_date >= service_date)),
-    CONSTRAINT vehicle_services_cost_check CHECK ((cost >= (0)::numeric)),
-    CONSTRAINT vehicle_services_mileage_check CHECK ((mileage >= 0)),
-    CONSTRAINT vehicle_services_service_date_check CHECK ((service_date <= CURRENT_DATE))
-);
-
-
-ALTER TABLE public.vehicle_services OWNER TO docker;
-
---
--- TOC entry 223 (class 1259 OID 16676)
--- Name: vehicle_services_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
---
-
-CREATE SEQUENCE public.vehicle_services_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.vehicle_services_id_seq OWNER TO docker;
-
---
--- TOC entry 3459 (class 0 OID 0)
--- Dependencies: 223
--- Name: vehicle_services_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
---
-
-ALTER SEQUENCE public.vehicle_services_id_seq OWNED BY public.vehicle_services.id;
-
-
---
--- TOC entry 222 (class 1259 OID 16607)
--- Name: vehicles; Type: TABLE; Schema: public; Owner: docker
---
-
-CREATE TABLE public.vehicles (
-    id integer NOT NULL,
-    user_id integer,
-    brand character varying(50) NOT NULL,
-    model character varying(50) NOT NULL,
-    reg_number character varying(20) NOT NULL,
-    mileage integer,
-    vehicle_inspection_expiry date,
-    oc_ac_expiry date,
-    vin character varying(17),
-    avg_fuel_consumption double precision,
-    status public.vehicle_status DEFAULT 'available'::public.vehicle_status NOT NULL,
-    current_latitude numeric(10,8),
-    current_longitude numeric(11,8),
-    last_location_update timestamp with time zone DEFAULT timezone('Europe/Warsaw'::text, now()),
-    photo character varying(255),
-    CONSTRAINT vehicles_avg_fuel_consumption_check CHECK ((avg_fuel_consumption > (0)::double precision)),
-    CONSTRAINT vehicles_current_latitude_check CHECK (((current_latitude >= ('-90'::integer)::numeric) AND (current_latitude <= (90)::numeric))),
-    CONSTRAINT vehicles_current_longitude_check CHECK (((current_longitude >= ('-180'::integer)::numeric) AND (current_longitude <= (180)::numeric))),
-    CONSTRAINT vehicles_mileage_check CHECK ((mileage >= 0)),
-    CONSTRAINT vehicles_vin_check CHECK ((length((vin)::text) = 17))
-);
-
-
-ALTER TABLE public.vehicles OWNER TO docker;
 
 --
 -- TOC entry 221 (class 1259 OID 16606)
@@ -333,7 +355,7 @@ CREATE SEQUENCE public.vehicles_id_seq
 ALTER SEQUENCE public.vehicles_id_seq OWNER TO docker;
 
 --
--- TOC entry 3460 (class 0 OID 0)
+-- TOC entry 3456 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: vehicles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
@@ -342,7 +364,44 @@ ALTER SEQUENCE public.vehicles_id_seq OWNED BY public.vehicles.id;
 
 
 --
--- TOC entry 3245 (class 2604 OID 16737)
+-- TOC entry 229 (class 1259 OID 16785)
+-- Name: vehicles_with_drivers; Type: VIEW; Schema: public; Owner: docker
+--
+
+CREATE VIEW public.vehicles_with_drivers AS
+ SELECT v.id,
+    v.user_id,
+    v.brand,
+    v.model,
+    v.reg_number,
+    v.mileage,
+    v.vehicle_inspection_expiry,
+    v.oc_ac_expiry,
+    v.vin,
+    v.avg_fuel_consumption,
+    v.status,
+    v.current_latitude,
+    v.current_longitude,
+    v.last_location_update,
+    v.photo,
+    d.id AS driver_id,
+    d.name AS driver_name,
+    d.surname AS driver_surname,
+    d.phone AS driver_phone,
+    d.driver_status
+   FROM ((public.vehicles v
+     LEFT JOIN ( SELECT DISTINCT ON (driver_vehicle_assignments.vehicle_id) driver_vehicle_assignments.vehicle_id,
+            driver_vehicle_assignments.driver_id,
+            driver_vehicle_assignments.assignment_date
+           FROM public.driver_vehicle_assignments
+          ORDER BY driver_vehicle_assignments.vehicle_id, driver_vehicle_assignments.assignment_date DESC) a ON ((a.vehicle_id = v.id)))
+     LEFT JOIN public.drivers d ON ((d.id = a.driver_id)));
+
+
+ALTER VIEW public.vehicles_with_drivers OWNER TO docker;
+
+--
+-- TOC entry 3248 (class 2604 OID 16737)
 -- Name: driver_vehicle_assignments id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
@@ -350,7 +409,7 @@ ALTER TABLE ONLY public.driver_vehicle_assignments ALTER COLUMN id SET DEFAULT n
 
 
 --
--- TOC entry 3238 (class 2604 OID 16597)
+-- TOC entry 3243 (class 2604 OID 16597)
 -- Name: drivers id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
@@ -358,7 +417,7 @@ ALTER TABLE ONLY public.drivers ALTER COLUMN id SET DEFAULT nextval('public.driv
 
 
 --
--- TOC entry 3247 (class 2604 OID 16755)
+-- TOC entry 3250 (class 2604 OID 16755)
 -- Name: notifications id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
@@ -366,7 +425,7 @@ ALTER TABLE ONLY public.notifications ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 3237 (class 2604 OID 16586)
+-- TOC entry 3242 (class 2604 OID 16586)
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
@@ -374,7 +433,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- TOC entry 3250 (class 2604 OID 16772)
+-- TOC entry 3253 (class 2604 OID 16772)
 -- Name: vehicle_location_history id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
@@ -382,15 +441,7 @@ ALTER TABLE ONLY public.vehicle_location_history ALTER COLUMN id SET DEFAULT nex
 
 
 --
--- TOC entry 3243 (class 2604 OID 16680)
--- Name: vehicle_services id; Type: DEFAULT; Schema: public; Owner: docker
---
-
-ALTER TABLE ONLY public.vehicle_services ALTER COLUMN id SET DEFAULT nextval('public.vehicle_services_id_seq'::regclass);
-
-
---
--- TOC entry 3240 (class 2604 OID 16610)
+-- TOC entry 3245 (class 2604 OID 16610)
 -- Name: vehicles id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
@@ -398,114 +449,93 @@ ALTER TABLE ONLY public.vehicles ALTER COLUMN id SET DEFAULT nextval('public.veh
 
 
 --
--- TOC entry 3444 (class 0 OID 16734)
--- Dependencies: 226
+-- TOC entry 3441 (class 0 OID 16734)
+-- Dependencies: 224
 -- Data for Name: driver_vehicle_assignments; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
-COPY public.driver_vehicle_assignments (id, driver_id, vehicle_id, assignment_date) FROM stdin;
-40	38	115	2025-06-05 20:54:59.218214+00
-42	39	119	2025-06-05 20:59:30.90928+00
-44	43	120	2025-06-05 21:03:37.850002+00
-\.
+INSERT INTO public.driver_vehicle_assignments (id, driver_id, vehicle_id, assignment_date) VALUES (40, 38, 115, '2025-06-05 20:54:59.218214+00');
+INSERT INTO public.driver_vehicle_assignments (id, driver_id, vehicle_id, assignment_date) VALUES (42, 39, 119, '2025-06-05 20:59:30.90928+00');
+INSERT INTO public.driver_vehicle_assignments (id, driver_id, vehicle_id, assignment_date) VALUES (44, 43, 120, '2025-06-05 21:03:37.850002+00');
 
 
 --
--- TOC entry 3438 (class 0 OID 16594)
+-- TOC entry 3437 (class 0 OID 16594)
 -- Dependencies: 220
 -- Data for Name: drivers; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
-COPY public.drivers (id, user_id, name, surname, phone, email, license_expiry, medical_exam_expiry, driver_status, photo) FROM stdin;
-38	14	Michał	Wszołek	508678037	michal6426@gmail.com	2033-08-13	2027-05-28	on_road	man.png
-40	14	Piotr	Kowalski	666432232	piter@gmail.eu	2026-10-17	2026-07-24	on_leave	man.png
-39	14	Karolina	Statek	123123123	karolina@elo.pl	2025-12-20	2026-06-04	on_road	woman.png
-41	14	Marceli	Kowalczyk	333253343	marceli23@gmail.com	2026-04-12	2026-02-18	on_leave	man.png
-43	14	Adam	Sandler	223111554	adam@example.com	2026-03-13	2025-12-24	on_road	man.png
-\.
+INSERT INTO public.drivers (id, user_id, name, surname, phone, email, license_expiry, medical_exam_expiry, driver_status, photo) VALUES (38, 14, 'Michał', 'Wszołek', '508678037', 'michal6426@gmail.com', '2033-08-13', '2027-05-28', 'on_road', 'man.png');
+INSERT INTO public.drivers (id, user_id, name, surname, phone, email, license_expiry, medical_exam_expiry, driver_status, photo) VALUES (40, 14, 'Piotr', 'Kowalski', '666432232', 'piter@gmail.eu', '2026-10-17', '2026-07-24', 'on_leave', 'man.png');
+INSERT INTO public.drivers (id, user_id, name, surname, phone, email, license_expiry, medical_exam_expiry, driver_status, photo) VALUES (39, 14, 'Karolina', 'Statek', '123123123', 'karolina@elo.pl', '2025-12-20', '2026-06-04', 'on_road', 'woman.png');
+INSERT INTO public.drivers (id, user_id, name, surname, phone, email, license_expiry, medical_exam_expiry, driver_status, photo) VALUES (41, 14, 'Marceli', 'Kowalczyk', '333253343', 'marceli23@gmail.com', '2026-04-12', '2026-02-18', 'on_leave', 'man.png');
+INSERT INTO public.drivers (id, user_id, name, surname, phone, email, license_expiry, medical_exam_expiry, driver_status, photo) VALUES (43, 14, 'Adam', 'Sandler', '223111554', 'adam@example.com', '2024-06-12', '2025-12-24', 'on_road', 'man.png');
 
 
 --
--- TOC entry 3446 (class 0 OID 16752)
--- Dependencies: 228
+-- TOC entry 3443 (class 0 OID 16752)
+-- Dependencies: 226
 -- Data for Name: notifications; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
-COPY public.notifications (id, user_id, message, is_read, created_at) FROM stdin;
-71	14	Vehicle id #114 successfully added	t	2025-06-05 20:49:43.193993+00
-72	14	Vehicle id #115 successfully added	t	2025-06-05 20:51:02.767298+00
-73	14	Vehicle id #116 successfully added	t	2025-06-05 20:52:18.73082+00
-74	14	Vehicle id #117 successfully added	t	2025-06-05 20:53:40.607016+00
-80	14	Vehicle id #119 successfully added	f	2025-06-05 20:59:31.067008+00
-75	14	Driver id #38 successfully added	t	2025-06-05 20:54:59.382915+00
-77	14	Driver id #40 successfully added	t	2025-06-05 20:56:48.93798+00
-78	14	Vehicle id #117 was deleted	t	2025-06-05 20:57:39.216076+00
-76	14	Driver id #39 successfully added	t	2025-06-05 20:55:34.315925+00
-79	14	Vehicle id #118 successfully added	t	2025-06-05 20:58:29.492284+00
-81	14	Driver id #41 successfully added	t	2025-06-05 21:00:30.067593+00
-82	14	Driver id #42 successfully added	t	2025-06-05 21:01:26.890451+00
-83	14	Driver id #43 successfully added	t	2025-06-05 21:02:07.607346+00
-84	14	Driver id #42 was deleted	t	2025-06-05 21:02:18.648113+00
-85	14	Vehicle id #120 successfully added	t	2025-06-05 21:03:38.007484+00
-86	14	Vehicle #116 OC/AC expires on 2025-06-27	f	2025-06-05 21:04:52.483165+00
-87	14	Vehicle #114 OC/AC expires on 2025-06-28	f	2025-06-05 21:04:52.535966+00
-88	14	Vehicle #119 OC/AC expires on 2025-06-29	f	2025-06-05 21:04:52.587825+00
-89	14	Vehicle #116 OC/AC expires on 2025-06-27	f	2025-06-05 21:29:28.708328+00
-90	14	Vehicle #114 OC/AC expires on 2025-06-28	f	2025-06-05 21:29:28.722063+00
-91	14	Vehicle #119 OC/AC expires on 2025-06-29	f	2025-06-05 21:29:28.734991+00
-\.
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (138, 14, 'Vehicle id #121 successfully added', true, '2025-06-14 10:38:49.364667+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (148, 14, 'Vehicle #116 OC/AC expires on 2025-06-27', false, '2025-06-14 17:31:43.762657+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (150, 14, 'Vehicle #119 OC/AC expires on 2025-06-29', false, '2025-06-14 17:31:43.890755+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (151, 14, 'Vehicle id #122 successfully added', false, '2025-06-14 17:34:35.070724+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (149, 14, 'Vehicle #114 OC/AC expires on 2025-06-28', true, '2025-06-14 17:31:43.82266+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (71, 14, 'Vehicle id #114 successfully added', true, '2025-06-05 20:49:43.193993+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (72, 14, 'Vehicle id #115 successfully added', true, '2025-06-05 20:51:02.767298+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (73, 14, 'Vehicle id #116 successfully added', true, '2025-06-05 20:52:18.73082+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (74, 14, 'Vehicle id #117 successfully added', true, '2025-06-05 20:53:40.607016+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (80, 14, 'Vehicle id #119 successfully added', false, '2025-06-05 20:59:31.067008+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (75, 14, 'Driver id #38 successfully added', true, '2025-06-05 20:54:59.382915+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (77, 14, 'Driver id #40 successfully added', true, '2025-06-05 20:56:48.93798+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (78, 14, 'Vehicle id #117 was deleted', true, '2025-06-05 20:57:39.216076+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (76, 14, 'Driver id #39 successfully added', true, '2025-06-05 20:55:34.315925+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (79, 14, 'Vehicle id #118 successfully added', true, '2025-06-05 20:58:29.492284+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (81, 14, 'Driver id #41 successfully added', true, '2025-06-05 21:00:30.067593+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (82, 14, 'Driver id #42 successfully added', true, '2025-06-05 21:01:26.890451+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (83, 14, 'Driver id #43 successfully added', true, '2025-06-05 21:02:07.607346+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (84, 14, 'Driver id #42 was deleted', true, '2025-06-05 21:02:18.648113+00');
+INSERT INTO public.notifications (id, user_id, message, is_read, created_at) VALUES (85, 14, 'Vehicle id #120 successfully added', true, '2025-06-05 21:03:38.007484+00');
 
 
 --
--- TOC entry 3436 (class 0 OID 16583)
+-- TOC entry 3435 (class 0 OID 16583)
 -- Dependencies: 218
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
-COPY public.users (id, name, surname, email, password) FROM stdin;
-14	Michał	Wszołek	michal6426@gmail.com	$2y$10$cTW6smyK.FJH.cSuY9ESeeCC2iCRBTknpsDr47Wzk7nkKHGxOnIC6
-\.
+INSERT INTO public.users (id, name, surname, email, password) VALUES (14, 'Michał', 'Wszołek', 'michal6426@gmail.com', '$2y$10$cTW6smyK.FJH.cSuY9ESeeCC2iCRBTknpsDr47Wzk7nkKHGxOnIC6');
 
 
 --
--- TOC entry 3448 (class 0 OID 16769)
--- Dependencies: 230
+-- TOC entry 3445 (class 0 OID 16769)
+-- Dependencies: 228
 -- Data for Name: vehicle_location_history; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
-COPY public.vehicle_location_history (id, vehicle_id, latitude, longitude, recorded_at) FROM stdin;
-\.
 
 
 --
--- TOC entry 3442 (class 0 OID 16677)
--- Dependencies: 224
--- Data for Name: vehicle_services; Type: TABLE DATA; Schema: public; Owner: docker
---
-
-COPY public.vehicle_services (id, vehicle_id, service_date, next_service_date, service_type, mileage, cost, description, service_provider, invoice_number, created_at) FROM stdin;
-\.
-
-
---
--- TOC entry 3440 (class 0 OID 16607)
+-- TOC entry 3439 (class 0 OID 16607)
 -- Dependencies: 222
 -- Data for Name: vehicles; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
-COPY public.vehicles (id, user_id, brand, model, reg_number, mileage, vehicle_inspection_expiry, oc_ac_expiry, vin, avg_fuel_consumption, status, current_latitude, current_longitude, last_location_update, photo) FROM stdin;
-116	14	Audi	A4	KWI2RD88	86001	2025-11-14	2025-06-27	VSZZ657KK15956443	9.4	available	49.39890800	18.75531500	2025-06-05 20:52:18.627696+00	2016-Audi-A4-render-front-three-quarter.jpg
-120	14	Skoda	Fabia	RJA77445	254006	2025-11-12	2025-07-31	KJFF6573F85936174	12.5	on_road	50.30025000	22.38663000	2025-06-05 21:03:37.746813+00	fabia.png
-114	14	Seat	Ibiza	KWI2296E	166000	2026-09-26	2025-06-28	VSZZ6573F85936174	11.2	in_service	50.59567800	17.38427800	2025-06-05 20:49:43.136268+00	IMG_5542.JPG
-115	14	Porsche	911	KR3FR41	34	2026-04-23	2026-04-02	VGGG6573F85956443	5.1	on_road	49.99737100	14.98005500	2025-06-05 20:51:02.659202+00	porsche.jpg
-118	14	Suzuki	Swift	KNS1734M	230000	2026-02-06	2026-09-25	VGGG657LKK5936174	8.3	in_service	53.11652800	22.82126100	2025-06-05 20:58:29.433959+00	cytrna.JPG
-119	14	Dodge	Challenger	KR4FM56	142000	2026-01-16	2025-06-29	VLKK6573F85936174	9.5	on_road	49.81482600	22.51056800	2025-06-05 20:59:30.80517+00	dodge_challenger_srt_demon_animated_wallpaper_by_favorisxp_dhbog0v-fullview.jpg
-\.
+INSERT INTO public.vehicles (id, user_id, brand, model, reg_number, mileage, vehicle_inspection_expiry, oc_ac_expiry, vin, avg_fuel_consumption, status, current_latitude, current_longitude, last_location_update, photo) VALUES (116, 14, 'Audi', 'A4', 'KWI2RD88', 86001, '2025-11-13', '2025-06-27', 'VSZZ657KK15956443', 9.4, 'available', 49.39890800, 18.75531500, '2025-06-05 20:52:18.627696+00', '2016-Audi-A4-render-front-three-quarter.jpg');
+INSERT INTO public.vehicles (id, user_id, brand, model, reg_number, mileage, vehicle_inspection_expiry, oc_ac_expiry, vin, avg_fuel_consumption, status, current_latitude, current_longitude, last_location_update, photo) VALUES (120, 14, 'Skoda', 'Fabia', 'RJA77445', 254006, '2025-07-31', '2025-07-31', 'KJFF6573F85936174', 12.5, 'on_road', 50.30025000, 22.38663000, '2025-06-05 21:03:37.746813+00', 'fabia.png');
+INSERT INTO public.vehicles (id, user_id, brand, model, reg_number, mileage, vehicle_inspection_expiry, oc_ac_expiry, vin, avg_fuel_consumption, status, current_latitude, current_longitude, last_location_update, photo) VALUES (121, 14, 'Fiat', '126p', 'KRA77445', 23009, '2025-10-25', '2025-10-23', 'GBCD6573F85936174', 6.9, 'in_service', 50.58253100, 15.88213100, '2025-06-14 10:38:49.344501+00', 'maluch.jpg');
+INSERT INTO public.vehicles (id, user_id, brand, model, reg_number, mileage, vehicle_inspection_expiry, oc_ac_expiry, vin, avg_fuel_consumption, status, current_latitude, current_longitude, last_location_update, photo) VALUES (122, 14, 'Skoda', 'Fabia', 'KWA2235', 123000, '2025-09-25', '2025-10-21', 'KSCC65FGD85936174', 8, 'available', 49.50136800, 22.74365800, '2025-06-14 17:34:34.937165+00', '2016-Audi-A4-render-front-three-quarter.jpg');
+INSERT INTO public.vehicles (id, user_id, brand, model, reg_number, mileage, vehicle_inspection_expiry, oc_ac_expiry, vin, avg_fuel_consumption, status, current_latitude, current_longitude, last_location_update, photo) VALUES (114, 14, 'Seat', 'Ibiza', 'KWI2296E', 166000, '2026-09-26', '2025-06-28', 'VSZZ6573F85936174', 11.2, 'in_service', 50.59567800, 17.38427800, '2025-06-05 20:49:43.136268+00', 'IMG_5542.JPG');
+INSERT INTO public.vehicles (id, user_id, brand, model, reg_number, mileage, vehicle_inspection_expiry, oc_ac_expiry, vin, avg_fuel_consumption, status, current_latitude, current_longitude, last_location_update, photo) VALUES (115, 14, 'Porsche', '911', 'KR3FR41', 34, '2026-04-23', '2026-04-02', 'VGGG6573F85956443', 5.1, 'on_road', 49.99737100, 14.98005500, '2025-06-05 20:51:02.659202+00', 'porsche.jpg');
+INSERT INTO public.vehicles (id, user_id, brand, model, reg_number, mileage, vehicle_inspection_expiry, oc_ac_expiry, vin, avg_fuel_consumption, status, current_latitude, current_longitude, last_location_update, photo) VALUES (118, 14, 'Suzuki', 'Swift', 'KNS1734M', 230000, '2026-02-06', '2026-09-25', 'VGGG657LKK5936174', 8.3, 'in_service', 53.11652800, 22.82126100, '2025-06-05 20:58:29.433959+00', 'cytrna.JPG');
+INSERT INTO public.vehicles (id, user_id, brand, model, reg_number, mileage, vehicle_inspection_expiry, oc_ac_expiry, vin, avg_fuel_consumption, status, current_latitude, current_longitude, last_location_update, photo) VALUES (119, 14, 'Dodge', 'Challenger', 'KR4FM56', 142000, '2026-01-16', '2025-06-29', 'VLKK6573F85936174', 9.5, 'on_road', 49.81482600, 22.51056800, '2025-06-05 20:59:30.80517+00', 'dodge_challenger_srt_demon_animated_wallpaper_by_favorisxp_dhbog0v-fullview.jpg');
 
 
 --
--- TOC entry 3461 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 3457 (class 0 OID 0)
+-- Dependencies: 223
 -- Name: driver_vehicle_assignments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
@@ -513,7 +543,7 @@ SELECT pg_catalog.setval('public.driver_vehicle_assignments_id_seq', 44, true);
 
 
 --
--- TOC entry 3462 (class 0 OID 0)
+-- TOC entry 3458 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: drivers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
@@ -522,16 +552,16 @@ SELECT pg_catalog.setval('public.drivers_id_seq', 43, true);
 
 
 --
--- TOC entry 3463 (class 0 OID 0)
--- Dependencies: 227
+-- TOC entry 3459 (class 0 OID 0)
+-- Dependencies: 225
 -- Name: notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
-SELECT pg_catalog.setval('public.notifications_id_seq', 91, true);
+SELECT pg_catalog.setval('public.notifications_id_seq', 151, true);
 
 
 --
--- TOC entry 3464 (class 0 OID 0)
+-- TOC entry 3460 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
@@ -540,8 +570,8 @@ SELECT pg_catalog.setval('public.users_id_seq', 17, true);
 
 
 --
--- TOC entry 3465 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 3461 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: vehicle_location_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
@@ -549,25 +579,16 @@ SELECT pg_catalog.setval('public.vehicle_location_history_id_seq', 1, false);
 
 
 --
--- TOC entry 3466 (class 0 OID 0)
--- Dependencies: 223
--- Name: vehicle_services_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
---
-
-SELECT pg_catalog.setval('public.vehicle_services_id_seq', 1, false);
-
-
---
--- TOC entry 3467 (class 0 OID 0)
+-- TOC entry 3462 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: vehicles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
-SELECT pg_catalog.setval('public.vehicles_id_seq', 120, true);
+SELECT pg_catalog.setval('public.vehicles_id_seq', 122, true);
 
 
 --
--- TOC entry 3278 (class 2606 OID 16740)
+-- TOC entry 3275 (class 2606 OID 16740)
 -- Name: driver_vehicle_assignments driver_vehicle_assignments_pkey; Type: CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -576,7 +597,7 @@ ALTER TABLE ONLY public.driver_vehicle_assignments
 
 
 --
--- TOC entry 3268 (class 2606 OID 16600)
+-- TOC entry 3267 (class 2606 OID 16600)
 -- Name: drivers drivers_pkey; Type: CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -585,7 +606,7 @@ ALTER TABLE ONLY public.drivers
 
 
 --
--- TOC entry 3280 (class 2606 OID 16761)
+-- TOC entry 3277 (class 2606 OID 16761)
 -- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -594,7 +615,7 @@ ALTER TABLE ONLY public.notifications
 
 
 --
--- TOC entry 3264 (class 2606 OID 16592)
+-- TOC entry 3263 (class 2606 OID 16592)
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -603,7 +624,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3266 (class 2606 OID 16590)
+-- TOC entry 3265 (class 2606 OID 16590)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -612,7 +633,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3282 (class 2606 OID 16777)
+-- TOC entry 3279 (class 2606 OID 16777)
 -- Name: vehicle_location_history vehicle_location_history_pkey; Type: CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -621,16 +642,7 @@ ALTER TABLE ONLY public.vehicle_location_history
 
 
 --
--- TOC entry 3276 (class 2606 OID 16689)
--- Name: vehicle_services vehicle_services_pkey; Type: CONSTRAINT; Schema: public; Owner: docker
---
-
-ALTER TABLE ONLY public.vehicle_services
-    ADD CONSTRAINT vehicle_services_pkey PRIMARY KEY (id);
-
-
---
--- TOC entry 3270 (class 2606 OID 16619)
+-- TOC entry 3269 (class 2606 OID 16619)
 -- Name: vehicles vehicles_pkey; Type: CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -639,7 +651,7 @@ ALTER TABLE ONLY public.vehicles
 
 
 --
--- TOC entry 3272 (class 2606 OID 16621)
+-- TOC entry 3271 (class 2606 OID 16621)
 -- Name: vehicles vehicles_reg_number_key; Type: CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -648,7 +660,7 @@ ALTER TABLE ONLY public.vehicles
 
 
 --
--- TOC entry 3274 (class 2606 OID 16623)
+-- TOC entry 3273 (class 2606 OID 16623)
 -- Name: vehicles vehicles_vin_key; Type: CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -657,7 +669,7 @@ ALTER TABLE ONLY public.vehicles
 
 
 --
--- TOC entry 3286 (class 2606 OID 16741)
+-- TOC entry 3282 (class 2606 OID 16741)
 -- Name: driver_vehicle_assignments driver_vehicle_assignments_driver_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -666,7 +678,7 @@ ALTER TABLE ONLY public.driver_vehicle_assignments
 
 
 --
--- TOC entry 3287 (class 2606 OID 16746)
+-- TOC entry 3283 (class 2606 OID 16746)
 -- Name: driver_vehicle_assignments driver_vehicle_assignments_vehicle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -675,7 +687,7 @@ ALTER TABLE ONLY public.driver_vehicle_assignments
 
 
 --
--- TOC entry 3283 (class 2606 OID 16601)
+-- TOC entry 3280 (class 2606 OID 16601)
 -- Name: drivers drivers_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -684,7 +696,7 @@ ALTER TABLE ONLY public.drivers
 
 
 --
--- TOC entry 3288 (class 2606 OID 16762)
+-- TOC entry 3284 (class 2606 OID 16762)
 -- Name: notifications notifications_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -693,7 +705,7 @@ ALTER TABLE ONLY public.notifications
 
 
 --
--- TOC entry 3289 (class 2606 OID 16778)
+-- TOC entry 3285 (class 2606 OID 16778)
 -- Name: vehicle_location_history vehicle_location_history_vehicle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -702,16 +714,7 @@ ALTER TABLE ONLY public.vehicle_location_history
 
 
 --
--- TOC entry 3285 (class 2606 OID 16690)
--- Name: vehicle_services vehicle_services_vehicle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
---
-
-ALTER TABLE ONLY public.vehicle_services
-    ADD CONSTRAINT vehicle_services_vehicle_id_fkey FOREIGN KEY (vehicle_id) REFERENCES public.vehicles(id) ON DELETE CASCADE;
-
-
---
--- TOC entry 3284 (class 2606 OID 16624)
+-- TOC entry 3281 (class 2606 OID 16624)
 -- Name: vehicles vehicles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
@@ -719,9 +722,8 @@ ALTER TABLE ONLY public.vehicles
     ADD CONSTRAINT vehicles_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
--- Completed on 2025-06-05 19:42:12 UTC
+-- Completed on 2025-06-14 18:12:59 UTC
 
 --
 -- PostgreSQL database dump complete
 --
-
